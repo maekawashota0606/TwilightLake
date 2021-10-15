@@ -9,15 +9,13 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _moveSpeed = 1;
     [SerializeField]
+    private float _gravity = 1;
     private float _jumpPower = 10;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
     private bool _isMoveUp = false;
-    private bool _isGround = false;
-    private Ray _ray; // 飛ばすレイ
-    private float _distance = 0.5f; // レイを飛ばす距離
-    private RaycastHit _hit; // レイが何かに当たった時の情報
-    private Vector3 _rayPosition; // レイを発射する位置
+    private bool _isGrounding = false;
+    private const string _GROUND_TAG = "Ground";
 
     void Start()
     {
@@ -26,9 +24,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        _rayPosition = transform.position;
-        _ray = new Ray(_rayPosition, Vector3.down);
-        Debug.DrawRay(_ray.origin, _ray.direction * _distance, Color.red);
+        _isGrounding = JudgeGround();
 
         if (Input.GetKey(KeyCode.A))
         {
@@ -46,10 +42,8 @@ public class Player : MonoBehaviour
             _isMoveLeft = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && _isGround)
+        if (Input.GetKeyDown(KeyCode.Space) && _isGrounding)
             _isMoveUp = true;
-        else
-            _isMoveUp = false;
     }
 
     private void FixedUpdate()
@@ -64,11 +58,41 @@ public class Player : MonoBehaviour
         _rb.velocity = new Vector3(speedX, _rb.velocity.y, 0);
 
         if (_isMoveUp)
+        {
             _rb.velocity = new Vector3(_rb.velocity.x, _jumpPower, 0);
+            _isMoveUp = false;
+        }
     }
 
-    private void JudgeGround()
+    private bool JudgeGround()
     {
-        //if()
+        Ray ray = new Ray(transform.position, Vector3.down);
+        RaycastHit hit;
+        float distance = 0.5f;
+        Debug.DrawRay(ray.origin, ray.direction * distance, Color.red);
+
+        bool isGround = false;
+        if (Physics.Raycast(ray, out hit, distance))
+        {
+            if (hit.collider.CompareTag(_GROUND_TAG))
+            {
+                Debug.Log("grounding");
+                isGround = true;
+            }
+        }
+
+        //bool isGround = false;
+        //if (Physics.BoxCast(transform.position, Vector3.one * transform.lossyScale.x, transform.up, out hit, transform.rotation))
+        //{
+        //    Gizmos.DrawRay(transform.position, Vector3.down * hit.distance);
+        //    if (hit.collider.CompareTag(_GROUND_TAG))
+        //    {
+        //        Debug.Log("grounding");
+        //        isGround = true;
+        //    }
+        //}
+
+
+        return isGround;
     }
 }
