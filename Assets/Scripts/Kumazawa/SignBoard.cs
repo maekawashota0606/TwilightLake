@@ -5,7 +5,17 @@ using UnityEngine.UI;
 
 public class SignBoard : MonoBehaviour
 {
-    public Text POPUP;
+    //話す内容
+    public string[] scenarios;
+
+    //プレイヤーが一定範囲内に入ったら会話できるサインを表すオブジェクト
+    public GameObject POPUP;
+
+    //プレイヤーが範囲内にいるかどうかの判定
+    bool Aflagflag = false;
+
+    public EventScript EventScript;
+
     //接触判定
     //private bool popUp = false;
 
@@ -15,7 +25,8 @@ public class SignBoard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        POPUP.SetActive(false);
+        Transform posB = this.gameObject.GetComponent<Transform>();
     }
 
     // Update is called once per frame
@@ -24,10 +35,29 @@ public class SignBoard : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter (Collider player)
+    private void OnTriggerEnter (Collider other)
     {
-        //Text.SetActive(true);
+        if(other.gameObject.tag == "player")
+        {
+            Aflagflag = true;
 
-        Debug.Log("当たってる");
+            //会話が可能な状態である事と、会話内容を表示するやつ
+            EventScript.StartEvent(Aflagflag, scenarios);
+
+            //
+            POPUP.transform.position = gameObject.transform.position
+                + new Vector3(-0.5f, 1f, 0);
+            POPUP.SetActive(true);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        //プレイヤーが範囲外に出たら会話しない
+        if(other.gameObject.tag == "player")
+        {
+            Aflagflag = false;
+            POPUP.SetActive(false);
+        }
     }
 }

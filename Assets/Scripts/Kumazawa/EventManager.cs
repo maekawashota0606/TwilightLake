@@ -16,15 +16,28 @@ public class EventManager : MonoBehaviour
 {
     public Canvas Window;
     public Image image;
+    public Hukidasi hukidasi;
+    public SignBoard signBoard;
+    public PlayerController playerController;
+
+    Vector2 posA = new Vector2();
+    Vector2 posB = new Vector2();
+
     
 
     private void Update()
     {
-        if(Input.GetKey(KeyCode.KeypadEnter))
+        float distance = Vector2.Distance(posA, posB);
+
+        if(posA.x == posB.x)
         {
-            
+            Debug.Log("重なったよ");
+
+            hukidasi.ShowBalloon();
         }
     }
+
+
 
     //プレイヤーが看板の判定に入った時
     /*private void OnTriggerEnter(Collider collider)
