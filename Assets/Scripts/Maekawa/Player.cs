@@ -5,16 +5,15 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    private Rigidbody _rb = null;
-    [SerializeField]
     private float _moveSpeed = 1;
     [SerializeField]
     private float _gravity = 1;
+    private Rigidbody _rb = null;
     private float _jumpPower = 10;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
     private bool _isMoveUp = false;
-    private bool _isGrounding = false;
+    private bool _isLanding = false;
     private const string _GROUND_TAG = "Ground";
 
     void Start()
@@ -24,7 +23,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        _isGrounding = JudgeGround();
+        _isLanding = JudgeLanding();
 
         if (Input.GetKey(KeyCode.A))
         {
@@ -42,21 +41,23 @@ public class Player : MonoBehaviour
             _isMoveLeft = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && _isGrounding)
+        if (Input.GetKeyDown(KeyCode.Space) && _isLanding)
             _isMoveUp = true;
     }
 
     private void FixedUpdate()
     {
         float speedX = 0;
+        float speedY = 0;
 
         if (_isMoveLeft)
             speedX = -_moveSpeed;
         else if (_isMoveRight)
             speedX = _moveSpeed;
 
-        _rb.velocity = new Vector3(speedX, _rb.velocity.y, 0);
-
+        speedY = _isLanding ? 0 : -_gravity;
+        _rb.velocity = new Vector3(speedX, speedY, 0);
+        
         if (_isMoveUp)
         {
             _rb.velocity = new Vector3(_rb.velocity.x, _jumpPower, 0);
@@ -64,35 +65,44 @@ public class Player : MonoBehaviour
         }
     }
 
-    private bool JudgeGround()
+    private bool JudgeLanding()
     {
-        Ray ray = new Ray(transform.position, Vector3.down);
-        RaycastHit hit;
-        float distance = 0.5f;
-        Debug.DrawRay(ray.origin, ray.direction * distance, Color.red);
+        bool isHitGround = false;
 
-        bool isGround = false;
-        if (Physics.Raycast(ray, out hit, distance))
+        // 雑にオフセットを指定
+        Vector3 StartPos = transform.position + new Vector3(-0.37f, 0.1f, 0);
+        Vector3 rayDirection = Vector3.down;
+        RaycastHit hit;
+        Vector3 boxSize = new Vector3(1.0f, 0.5f, 1);
+        float distance = 1f;
+        //　Cubeのレイを飛ばしターゲットと接触しているか判定
+        if (Physics.BoxCast(StartPos, boxSize / 2, rayDirection, out hit, Quaternion.identity, distance))
         {
-            if (hit.collider.CompareTag(_GROUND_TAG))
+            if (hit.transform.gameObject.CompareTag(_GROUND_TAG))
             {
-                Debug.Log("grounding");
-                isGround = true;
+                isHitGround = true;
+                Debug.Log("hit");
             }
         }
 
-        //bool isGround = false;
-        //if (Physics.BoxCast(transform.position, Vector3.one * transform.lossyScale.x, transform.up, out hit, transform.rotation))
-        //{
-        //    Gizmos.DrawRay(transform.position, Vector3.down * hit.distance);
-        //    if (hit.collider.CompareTag(_GROUND_TAG))
-        //    {
-        //        Debug.Log("grounding");
-        //        isGround = true;
-        //    }
-        //}
-
-
-        return isGround;
+        return isHitGround;
     }
+
+    #region forDebug
+    private void OnDrawGizmos()
+    {
+        // 雑にオフセットを指定
+        Vector3 StartPos = transform.position + new Vector3(-0.37f, 0.1f, 0);
+        Vector3 rayDirection = Vector3.down;
+        RaycastHit hit;
+        float distance = 1f;
+        Vector3 boxSize = new Vector3(0.5f, 0.25f, 1);
+        //　Cubeのレイを飛ばしターゲットと接触しているか判定
+        if (Physics.BoxCast(StartPos, boxSize, rayDirection, out hit, Quaternion.identity, distance))
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(StartPos + (rayDirection * distance), boxSize * 2);
+        }
+    }
+    #endregion
 }
