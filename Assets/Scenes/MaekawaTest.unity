@@ -160,7 +160,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4211511329440212186, guid: 516d7253dddf29a4bb3b089e5ea366ae, type: 3}
       propertyPath: _maxJumpHeight
-      value: 3
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 1119391632, guid: 516d7253dddf29a4bb3b089e5ea366ae, type: 3}
       propertyPath: m_Center.x
@@ -188,11 +188,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: 516d7253dddf29a4bb3b089e5ea366ae, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.9
+      value: -0.99
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: 516d7253dddf29a4bb3b089e5ea366ae, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 19.26
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: 516d7253dddf29a4bb3b089e5ea366ae, type: 3}
       propertyPath: m_LocalPosition.z
@@ -243,13 +243,13 @@ GameObject:
   - component: {fileID: 226862070}
   - component: {fileID: 226862069}
   - component: {fileID: 226862068}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &226862068
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -322,7 +322,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 226862067}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0.98, y: -2.61, z: 0}
+  m_LocalPosition: {x: 9.75, y: -2.61, z: 0}
   m_LocalScale: {x: 4, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -339,7 +339,7 @@ GameObject:
   - component: {fileID: 795961147}
   - component: {fileID: 795961146}
   - component: {fileID: 795961145}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: slope
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -628,13 +628,13 @@ GameObject:
   - component: {fileID: 1430920675}
   - component: {fileID: 1430920674}
   - component: {fileID: 1430920673}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wall (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1430920673
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -707,7 +707,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1430920672}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -3.97, y: -3.65, z: 0}
+  m_LocalPosition: {x: -10.04, y: -3.65, z: 0}
   m_LocalScale: {x: 4, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -742,7 +742,7 @@ GameObject:
   - component: {fileID: 1743744622}
   - component: {fileID: 1743744621}
   - component: {fileID: 1743744623}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -838,7 +838,7 @@ GameObject:
   - component: {fileID: 1898569102}
   - component: {fileID: 1898569101}
   - component: {fileID: 1898569100}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground (2)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -934,7 +934,7 @@ GameObject:
   - component: {fileID: 1912508539}
   - component: {fileID: 1912508538}
   - component: {fileID: 1912508537}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}

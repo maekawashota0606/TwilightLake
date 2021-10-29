@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _moveSpeed = 1;
     [SerializeField]
-    private float _maxJumpTime = 1;
+    private float _maxJumpTime = 0.75f;
     [SerializeField]
     private float _maxJumpHeight = 2.5f;
     private Rigidbody _rb = null;
@@ -21,6 +21,11 @@ public class Player : MonoBehaviour
     private bool _isMoveLeft = false;
     private bool _isMoveUp = false;
     private bool _isJumping = false;
+    private bool _isLeaveGround = false;
+    private float _jumpedDistanceY = 0;
+    private float _jumpedTimeCount = 0;
+    private bool _isJumpEnd = false;
+
     private enum AttackType : byte
     {
         None,
@@ -39,17 +44,18 @@ public class Player : MonoBehaviour
     {
         #region
         // ↓
-        Vector3 origin = transform.position + new Vector3(0, 0.35f, 0);
+        Vector3 origin = transform.position + new Vector3(0, -0.75f, 0);
         Vector3 boxSize = new Vector3(1, 0.5f, 1);
-        bool isLanding = IsHitGround(origin, boxSize, Vector3.down);
+        int layerMask = 1 << 6;
+        bool isLanding = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
         // ←
-        origin = transform.position + new Vector3(0.7f, 0, 0);
+        origin = transform.position + new Vector3(-0.25f, 0, 0);
         boxSize = new Vector3(0.5f, 1.5f, 1);
-        bool hitWallLeft = IsHitGround(origin, boxSize, Vector3.left);
+        bool hitWallLeft = Physics.CheckBox(origin, boxSize / 2,Quaternion.identity, layerMask);
         // →
-        origin = transform.position + new Vector3(-0.7f, 0, 0);
+        origin = transform.position + new Vector3(0.25f, 0, 0);
         // 左右でboxSizeは同じ
-        bool hitWallRight = IsHitGround(origin, boxSize, Vector3.right);
+        bool hitWallRight = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
         #endregion
 
         #region
@@ -77,28 +83,53 @@ public class Player : MonoBehaviour
         float speedX = 0, speedY = 0;
 
         if (_isMoveLeft && !hitWallLeft)
-            speedX = -_moveSpeed;
+            speedX = -_moveSpeed * Time.deltaTime;
         else if (_isMoveRight && !hitWallRight)
-            speedX = _moveSpeed;
+            speedX = _moveSpeed * Time.deltaTime;
+        // 重力
+        if(!isLanding)
+            speedY = Physics.gravity.y * Time.deltaTime;
 
-        // ジャンプ
+        // ジャンプ開始
         if (_isMoveUp)
+        {
             _isJumping = true;
-
+            _animator.SetTrigger("Jump");
+        }
+        // ジャンプ中
         if (_isJumping)
-            Jump(ref speedY);
-        else if (!isLanding)
-            speedY = Physics.gravity.y;
+        {
+            _jumpedTimeCount += Time.deltaTime;
+
+            // ジャンプ開始後、地面から離れたなら
+            if (!isLanding)
+                _isLeaveGround = true;
+
+            // 一度飛んだ後、着地したならジャンプ終了
+            if (_isLeaveGround && isLanding || _isJumpEnd)
+            {
+                _isLeaveGround = false;
+                _isJumping = false;
+                _isJumpEnd = false;
+                _jumpedTimeCount = 0;
+                _jumpedDistanceY = 0;
+                _animator.SetTrigger("Fall");
+            }
+            else
+                speedY = Jump(_jumpedTimeCount) - _jumpedDistanceY;
+
+            _jumpedDistanceY += speedY;
+        }
+
         //
         Vector3 move = new Vector3(speedX, speedY, 0);
-        transform.Translate(move * Time.deltaTime);
+        transform.Translate(move);
         #endregion
 
         #region
         if (Input.GetMouseButtonDown(0))
             Attack(AttackType.OnGround);
         #endregion
-        //_animator.SetBool("Landing", isLanding);
     }
 
     private void FixedUpdate()
@@ -106,64 +137,24 @@ public class Player : MonoBehaviour
 
     }
 
-    private bool IsHitGround(Vector3 origin, Vector3 boxSize, Vector3 direction)
-    {
-        bool isHitGround = false;
-        RaycastHit hit;
-        float distance = 1.0f;
-        //
-        if (Physics.BoxCast(origin, boxSize / 2, direction, out hit, Quaternion.identity, distance))
-            if (hit.transform.gameObject.CompareTag(GameManager.Instance.groundTag))
-                isHitGround = true;
-
-        return isHitGround;
-    }
-
     #if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
-        // ↓
-        //Vector3 StartPos = transform.position + new Vector3(0, 0.35f, 0);
-        //Vector3 boxSize = new Vector3(1.0f, 0.5f, 1);
-        //Vector3 rayDirection = Vector3.down;
-        // ↑
-        Vector3 StartPos = transform.position + new Vector3(0, -0.35f, 0);
-        Vector3 boxSize = new Vector3(1.0f, 0.5f, 1);
-        Vector3 rayDirection = Vector3.up;
-        // ←
-        //Vector3 StartPos = transform.position + new Vector3(0.7f, 0, 0);
-        //Vector3 boxSize = new Vector3(0.5f, 1.5f, 1);
-        //Vector3 rayDirection = Vector3.left;
-        // →
-        //Vector3 StartPos = transform.position + new Vector3(-0.7f, 0, 0);
-        //Vector3 boxSize = new Vector3(0.5f, 1.5f, 1);
-        //Vector3 rayDirection = Vector3.right;
-        //　Cubeのレイを飛ばしターゲットと接触しているか判定
-        RaycastHit hit;
-        float distance = 1f;
-
-        if (Physics.BoxCast(StartPos, boxSize / 2, rayDirection, out hit, Quaternion.identity, distance))
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(StartPos + (rayDirection * distance), boxSize);
-        }
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    Vector3 StartPos = transform.position + new Vector3(-0.25f, 0, 0);
+    //    Vector3 boxSize = new Vector3(0.5f, 1.5f, 1);
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireCube(StartPos, boxSize);
+    //}
     #endif
 
-    private float _jumpedDistance = 0;
-    private void Jump(ref float speedY)
+    private float Jump(float deltaTime)
     {
-        if(_jumpedDistance > _maxJumpHeight)
-        {
-            _isJumping = false;
-            _jumpedDistance = 0;
-            _animator.SetTrigger("Fall");
-        }
-        else
-        {
-            _jumpedDistance += _maxJumpHeight / _maxJumpTime * Time.deltaTime;
-            speedY = _maxJumpHeight / _maxJumpTime;
-        }
+        float y = -20 * Mathf.Pow(deltaTime - _maxJumpTime, 2) + _maxJumpHeight;
+        if (deltaTime >= _maxJumpTime)
+            _isJumpEnd = true;
+
+        //Debug.Log(y);
+        return y;
     }
 
     private void Attack(AttackType type)
