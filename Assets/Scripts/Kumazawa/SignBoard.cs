@@ -5,59 +5,72 @@ using UnityEngine.UI;
 
 public class SignBoard : MonoBehaviour
 {
-    //話す内容
-    public string[] scenarios;
-
-    //プレイヤーが一定範囲内に入ったら会話できるサインを表すオブジェクト
-    public GameObject POPUP;
+    //看板に入ってスペースが押されたかの判定
+    public bool Aflagflag = false;
 
     //プレイヤーが範囲内にいるかどうかの判定
-    bool Aflagflag = false;
+    public bool KanbanHit = false;
 
-    public EventScript EventScript;
+    //プレイヤーが範囲外に出たかの判定
+    public bool KanbanGetout = false;
 
-    //接触判定
-    //private bool popUp = false;
+    public TalkPanel talkPanel;
+    public SearchText searchText;
 
+    //〇ボタンで調べるUIを取得するやつ
+    public Image Search;
 
-    //
+    private void OnTriggerEnter(Collider other)
+    {
+        //プレイヤーが範囲内に入ったら会話する
+        if (other.gameObject.tag == "Player")
+        {
+            KanbanHit = true;
+            searchText.ShowSearch();
+
+            Debug.Log("当たった");
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        //プレイヤーが範囲外に出たら会話しない
+        if (KanbanHit == true)
+        {
+            KanbanHit = false;
+            searchText.HideSearch();
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        POPUP.SetActive(false);
-        Transform posB = this.gameObject.GetComponent<Transform>();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-    private void OnTriggerEnter (Collider other)
-    {
-        if(other.gameObject.tag == "player")
+        //プレイヤーが看板に当たってスペースキーが押された時の処理
+        if (KanbanHit == true && Input.GetKeyDown(KeyCode.Space))
         {
             Aflagflag = true;
-
-            //会話が可能な状態である事と、会話内容を表示するやつ
-            EventScript.StartEvent(Aflagflag, scenarios);
-
-            //
-            POPUP.transform.position = gameObject.transform.position
-                + new Vector3(-0.5f, 1f, 0);
-            POPUP.SetActive(true);
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        //プレイヤーが範囲外に出たら会話しない
-        if(other.gameObject.tag == "player")
-        {
-            Aflagflag = false;
-            POPUP.SetActive(false);
-        }
-    }
+    //private void OnTriggerEnter (Collider other)
+    //{
+    //    if (other.gameObject.tag == "Player")
+    //    {
+
+    //    }
+    //}
+
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    //プレイヤーが範囲外に出たら会話しない
+    //    if(other.gameObject.tag == "Player")
+    //    {
+            
+    //    }
+    //}
 }

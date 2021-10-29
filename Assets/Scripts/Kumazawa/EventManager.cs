@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-//看板にプレイヤーが当たったら[!]を出す(boolで管理)
-//エンターキーを押したら[!]を消してウィンドウの表示(この時にboolをfalseにする)
 //OnTriggerExitで離れた際のboolをfalseにすることを忘れない
 //YesとNoを選択できるようにする(選択してる矢印を付ける、点滅もできたらする)
 //Yesの時の分岐のリンクを作る
@@ -16,28 +14,34 @@ public class EventManager : MonoBehaviour
 {
     public Canvas Window;
     public Image image;
-    public Hukidasi hukidasi;
+    public GameObject KANBAN;
     public SignBoard signBoard;
     public PlayerController playerController;
+    public TalkPanel talkPanel;
+    public SearchText searchText;
 
-    Vector2 posA = new Vector2();
-    Vector2 posB = new Vector2();
-
-    
-
-    private void Update()
+    private void Start()
     {
-        float distance = Vector2.Distance(posA, posB);
-
-        if(posA.x == posB.x)
-        {
-            Debug.Log("重なったよ");
-
-            hukidasi.ShowBalloon();
-        }
+        
     }
 
 
+    private void Update()
+    {
+        if(KANBAN.GetComponent<SignBoard>().Aflagflag == true)
+        {
+            talkPanel.ShowPanel();
+
+            Time.timeScale = 0f;
+        }
+
+        if (KANBAN.GetComponent<SignBoard>().Aflagflag == false)
+        {
+            talkPanel.HidePanel();
+
+            Time.timeScale = 1f;
+        }
+    }
 
     //プレイヤーが看板の判定に入った時
     /*private void OnTriggerEnter(Collider collider)
