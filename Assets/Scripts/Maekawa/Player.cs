@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : SingletonMonoBehaviour<Player>
 {
     [SerializeField]
     private int _hp = 100;
@@ -14,8 +14,6 @@ public class Player : MonoBehaviour
     private float _maxJumpTime = 0.75f;
     [SerializeField]
     private float _maxJumpHeight = 2.5f;
-    private Rigidbody _rb = null;
-    private BoxCollider _hitBox = null;
     private Animator _animator = null;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
@@ -36,21 +34,19 @@ public class Player : MonoBehaviour
     void Start()
     {
         _animator = GetComponent<Animator>();
-        _hitBox = GetComponent<BoxCollider>();
-        _rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
         #region
         // ↓
-        Vector3 origin = transform.position + new Vector3(0, -0.75f, 0);
-        Vector3 boxSize = new Vector3(1, 0.5f, 1);
+        Vector3 origin = transform.position + new Vector3(0, 0, 0);
+        Vector3 boxSize = new Vector3(0.75f, 0.1f, 1);
         int layerMask = 1 << 6;
-        bool isLanding = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
+        bool isLanding = Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, 1, layerMask);
         // ←
         origin = transform.position + new Vector3(-0.25f, 0, 0);
-        boxSize = new Vector3(0.5f, 1.5f, 1);
+        boxSize = new Vector3(0.5f, 1.25f, 1);
         bool hitWallLeft = Physics.CheckBox(origin, boxSize / 2,Quaternion.identity, layerMask);
         // →
         origin = transform.position + new Vector3(0.25f, 0, 0);
@@ -107,14 +103,7 @@ public class Player : MonoBehaviour
 
             // 一度飛んだ後、着地したならジャンプ終了
             if (_isLeaveGround && isLanding || _isJumpEnd)
-            {
-                _isLeaveGround = false;
-                _isJumping = false;
-                _isJumpEnd = false;
-                _jumpedTimeCount = 0;
-                _jumpedDistanceY = 0;
-                _animator.SetTrigger("Fall");
-            }
+                EndJump();
             else
                 speedY = Jump(_jumpedTimeCount) - _jumpedDistanceY;
 
@@ -137,15 +126,19 @@ public class Player : MonoBehaviour
 
     }
 
-    #if UNITY_EDITOR
-    //private void OnDrawGizmos()
-    //{
-    //    Vector3 StartPos = transform.position + new Vector3(-0.25f, 0, 0);
-    //    Vector3 boxSize = new Vector3(0.5f, 1.5f, 1);
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireCube(StartPos, boxSize);
-    //}
-    #endif
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Vector3 origin = transform.position + new Vector3(0, 0.1f, 0);
+        Vector3 boxSize = new Vector3(0.5f, 0.05f, 1);
+        int layerMask = 1 << 6;
+        bool isLanding = Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, 1, layerMask);
+        //Vector3 origin = transform.position + new Vector3(-0.25f, 0f, 0);
+        //Vector3 boxSize = new Vector3(0.5f, 1.25f, 1);
+        //Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(origin + (Vector3.down * 1), boxSize);
+    }
+#endif
 
     private float Jump(float deltaTime)
     {
@@ -155,6 +148,16 @@ public class Player : MonoBehaviour
 
         //Debug.Log(y);
         return y;
+    }
+
+    private void EndJump()
+    {
+        _isLeaveGround = false;
+        _isJumping = false;
+        _isJumpEnd = false;
+        _jumpedTimeCount = 0;
+        _jumpedDistanceY = 0;
+        _animator.SetTrigger("Fall");
     }
 
     private void Attack(AttackType type)
