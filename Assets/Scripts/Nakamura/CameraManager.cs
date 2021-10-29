@@ -5,19 +5,21 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     Vector3 cameraPos;
-    // Start is called before the first frame update
+    Vector3 playerPos;
+
     void Start()
     {
         cameraPos = transform.position;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        /*if (PlayerTest.pos.x >= 2)
+        cameraPos = transform.position;
+        playerPos = GameObject.Find("Player").transform.position;
+        if(playerPos.x > 0)
         {
-            cameraPos.x = PlayerTest.pos.x;
+            cameraPos.x = playerPos.x;
             transform.position = cameraPos;
-        }*/
+        }
     }
 }
