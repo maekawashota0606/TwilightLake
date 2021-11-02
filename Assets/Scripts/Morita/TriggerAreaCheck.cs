@@ -13,7 +13,7 @@ public class TriggerAreaCheck : MonoBehaviour
     {
         enemyParent = GetComponentInParent<EnemyAI>();
     }
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerEnter(Collider collider)
     {
         if(collider.gameObject.CompareTag("Player"))
         {

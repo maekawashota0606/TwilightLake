@@ -18,14 +18,14 @@ public class HotZoneCheck : MonoBehaviour
             enemyParent.Flip(); 
         }
     }
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerEnter(Collider collider)
     {
         if(collider.gameObject.CompareTag("Player"))
         {
             inRange = true;
         }
     }
-    private void OnTriggerExit2D(Collider2D collider)
+    private void OnTriggerExit(Collider collider)
     {
         inRange = false;
         gameObject.SetActive(false);
