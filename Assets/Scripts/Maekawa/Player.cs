@@ -5,16 +5,23 @@ using UnityEngine;
 public class Player : SingletonMonoBehaviour<Player>
 {
     [SerializeField]
-    private int _hp = 100;
+    private int _HP = 100;
     [SerializeField]
     private int _attackPower = 10;
     [SerializeField]
-    private float _moveSpeed = 1;
+    private float _horizontalVelocity = 10;
+    [SerializeField]
+    private float _initialVelocity = 0.1f;
     [SerializeField]
     private float _maxJumpTime = 0.75f;
     [SerializeField]
     private float _maxJumpHeight = 2.5f;
+    [SerializeField]
+    private float _invalidTime = 1.5f;
+    [SerializeField]
+    private float _FlickeringTime = 0.2f;
     private Animator _animator = null;
+    private SpriteRenderer  _spriteRenderer = null;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
     private bool _isMoveUp = false;
@@ -23,7 +30,9 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _jumpedDistanceY = 0;
     private float _jumpedTimeCount = 0;
     private bool _isJumpEnd = false;
-
+    private bool _isInvalid = false;
+    private float _CurrentInvalidTime = 0;
+    
     private enum AttackType : byte
     {
         None,
@@ -34,19 +43,19 @@ public class Player : SingletonMonoBehaviour<Player>
     void Start()
     {
         _animator = GetComponent<Animator>();
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _isInvalid = true;
     }
 
     private void Update()
     {
         #region
         // ↓
-        Vector3 origin = transform.position + new Vector3(0, 0, 0);
-        Vector3 boxSize = new Vector3(0.75f, 0.1f, 1);
-        int layerMask = 1 << 6;
-        bool isLanding = Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, 1, layerMask);
+        bool isLanding = CheckLanding();
         // ←
-        origin = transform.position + new Vector3(-0.25f, 0, 0);
-        boxSize = new Vector3(0.5f, 1.25f, 1);
+        Vector3 origin = transform.position + new Vector3(-0.25f, 0, 0);
+        Vector3 boxSize = new Vector3(0.5f, 1.25f, 1);
+        int layerMask = 1 << 6;
         bool hitWallLeft = Physics.CheckBox(origin, boxSize / 2,Quaternion.identity, layerMask);
         // →
         origin = transform.position + new Vector3(0.25f, 0, 0);
@@ -76,15 +85,15 @@ public class Player : SingletonMonoBehaviour<Player>
 
         #region
         // 左右移動
-        float speedX = 0, speedY = 0;
+        float moveX = 0, moveY = 0;
 
         if (_isMoveLeft && !hitWallLeft)
-            speedX = -_moveSpeed * Time.deltaTime;
+            moveX = -_horizontalVelocity * Time.deltaTime;
         else if (_isMoveRight && !hitWallRight)
-            speedX = _moveSpeed * Time.deltaTime;
+            moveX = _horizontalVelocity * Time.deltaTime;
         // 重力
         if(!isLanding)
-            speedY = Physics.gravity.y * Time.deltaTime;
+            moveY = Physics.gravity.y * Time.deltaTime;
 
         // ジャンプ開始
         if (_isMoveUp)
@@ -96,29 +105,28 @@ public class Player : SingletonMonoBehaviour<Player>
         if (_isJumping)
         {
             _jumpedTimeCount += Time.deltaTime;
+            moveY = Jump(_jumpedTimeCount);
 
             // ジャンプ開始後、地面から離れたなら
             if (!isLanding)
                 _isLeaveGround = true;
-
             // 一度飛んだ後、着地したならジャンプ終了
             if (_isLeaveGround && isLanding || _isJumpEnd)
                 EndJump();
-            else
-                speedY = Jump(_jumpedTimeCount) - _jumpedDistanceY;
-
-            _jumpedDistanceY += speedY;
         }
 
-        //
-        Vector3 move = new Vector3(speedX, speedY, 0);
+        // 移動
+        Vector3 move = new Vector3(moveX, moveY, 0);
         transform.Translate(move);
         #endregion
 
-        #region
+        // 攻撃
         if (Input.GetMouseButtonDown(0))
             Attack(AttackType.OnGround);
-        #endregion
+
+        //
+        if (_isInvalid)
+            InvalidTimeCount();
     }
 
     private void FixedUpdate()
@@ -131,23 +139,37 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         Vector3 origin = transform.position + new Vector3(0, 0.1f, 0);
         Vector3 boxSize = new Vector3(0.5f, 0.05f, 1);
-        int layerMask = 1 << 6;
-        bool isLanding = Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, 1, layerMask);
-        //Vector3 origin = transform.position + new Vector3(-0.25f, 0f, 0);
-        //Vector3 boxSize = new Vector3(0.5f, 1.25f, 1);
-        //Gizmos.color = Color.red;
+        //int layerMask = 1 << 6;
+        //bool isLanding = Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, 1, layerMask);
+
         Gizmos.DrawWireCube(origin + (Vector3.down * 1), boxSize);
     }
 #endif
 
+    private bool CheckLanding()
+    {
+        Vector3 origin = transform.position + new Vector3(0, -0.25f, 0);
+        Vector3 boxSize = new Vector3(0.1f, 1f, 1);
+        float distance = 0.1f;
+        int layerMask = 1 << 6;
+        return Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask);
+    }
+
+    #region ジャンプ処理
     private float Jump(float deltaTime)
     {
-        float y = -20 * Mathf.Pow(deltaTime - _maxJumpTime, 2) + _maxJumpHeight;
         if (deltaTime >= _maxJumpTime)
+        {
             _isJumpEnd = true;
+            return 0;
+        }
+            
+        //float y = -20 * Mathf.Pow(deltaTime - _maxJumpTime, 2) + _maxJumpHeight;
+        float y =  _initialVelocity +  Mathf.Lerp(0, _maxJumpHeight, deltaTime / _maxJumpTime);
+        float moveY = y - _jumpedDistanceY;
+        _jumpedDistanceY += moveY;
 
-        //Debug.Log(y);
-        return y;
+        return moveY < 0 ? 0 : moveY;
     }
 
     private void EndJump()
@@ -159,26 +181,69 @@ public class Player : SingletonMonoBehaviour<Player>
         _jumpedDistanceY = 0;
         _animator.SetTrigger("Fall");
     }
+    #endregion
 
+    #region 攻撃処理
     private void Attack(AttackType type)
     {
         _animator.SetInteger("Attack", (int)type);
     }
 
+    // animatorから呼び出し
     private void EndAttack()
     {
         _animator.SetInteger("Attack", (int)AttackType.None);
     }
 
-
-    // 攻撃用侵入判定
-    private void OnTriggerEnter(Collider other)
+    public void AddDamage()
     {
-        // 出入りすると複数回呼ばれかねないので
-        // 敵に無敵時間を作るか重複させないようにする
-        IDamagable damagable = other.GetComponent<IDamagable>();
 
-        if (damagable != null)
-            damagable.AddDamage(_attackPower);
+    }
+
+    #endregion
+
+    public void RecieveDamage(int damage)
+    {
+        if (_isInvalid)
+            return;
+
+        _HP -= damage;
+        Debug.Log($"{damage}ダメージを受けた(残りHP:{_HP})");
+        _isInvalid = true;
+        StartCoroutine(Flickering());
+    }
+
+    private void InvalidTimeCount()
+    {
+        _CurrentInvalidTime += Time.deltaTime;
+
+        if (_CurrentInvalidTime >= _invalidTime)
+        {
+            _CurrentInvalidTime = 0;
+            _isInvalid = false;
+        }
+    }
+
+    private IEnumerator Flickering()
+    {
+        bool isTransparent = false;
+
+        while(_isInvalid)
+        {
+            if (isTransparent)
+            {
+                _spriteRenderer.color = new Color(1, 1, 1, 1);
+                isTransparent = false;
+            }
+            else
+            {
+                _spriteRenderer.color = new Color(1, 1, 1, 0.25f);
+                isTransparent = true;
+            }
+            yield return new WaitForSeconds(_FlickeringTime);
+        }
+        _spriteRenderer.color = new Color(1, 1, 1, 1);
+
+        yield break;
     }
 }
