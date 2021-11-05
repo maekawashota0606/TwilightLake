@@ -16,7 +16,7 @@ public class CameraManager : MonoBehaviour
     {
         cameraPos = transform.position;
         playerPos = GameObject.Find("Player").transform.position;
-        if(playerPos.x > 0)
+        if(playerPos.x > -3)
         {
             cameraPos.x = playerPos.x;
             transform.position = cameraPos;
