@@ -26,6 +26,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _FlickeringTime = 0.2f;
     private Animator _animator = null;
     private SpriteRenderer  _spriteRenderer = null;
+    private float _direction = 1;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
     private bool _isJumping = false;
@@ -46,8 +47,8 @@ public class Player : SingletonMonoBehaviour<Player>
     {
        Idle,
        Move,
-       Attack,
        Jump,
+       Attack,
        Avoid
     }
 
@@ -89,15 +90,9 @@ public class Player : SingletonMonoBehaviour<Player>
        if(!Input.GetButton("Left") || !Input.GetButton("Right"))
        {
             if (Input.GetButton("Left"))
-            {
-                _isMoveRight = false;
                 _isMoveLeft = true;
-            }
             else if (Input.GetButton("Right"))
-            {
                 _isMoveRight = true;
-                _isMoveLeft = false;
-            }
         }
 
         // 攻撃
@@ -122,15 +117,12 @@ public class Player : SingletonMonoBehaviour<Player>
         // 左右移動
         float moveX = 0, moveY = 0;
 
-        if (_isMoveLeft)
-            moveX = -_horizontalVelocity * Time.deltaTime;
-        else if (_isMoveRight)
-            moveX = _horizontalVelocity * Time.deltaTime;
+        if(_playerState < PlayerState.Attack)
+            moveX = Move();
+
         // 重力
         if(_playerState < PlayerState.Avoid && !isLanding)
             moveY = Physics.gravity.y * Time.deltaTime;
-
-
 
         // ジャンプ中
         if (_isJumping)
@@ -166,16 +158,36 @@ public class Player : SingletonMonoBehaviour<Player>
 
         //　無敵時間経過処理
         if (_isInvalid)
-        InvalidTimeCount();
+            InvalidTimeCount();
+
+        transform.localScale = new Vector3(_direction, 1, 1);
     }
 
     private bool CheckLanding()
     {
-        Vector3 origin = transform.position + new Vector3(0, -0.25f, 0);
+        Vector3 origin = transform.position + new Vector3(0, -0.5f, 0);
         Vector3 boxSize = new Vector3(0.1f, 1f, 1);
         float distance = 0.1f;
         int layerMask = 1 << 6;
         return Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask);
+    }
+
+    private float Move()
+    {
+        float moveX = 0;
+
+        if (_isMoveLeft)
+        {
+            moveX = -_horizontalVelocity * Time.deltaTime;
+            _direction = -1;
+        }           
+        else if (_isMoveRight)
+        {
+            moveX = _horizontalVelocity * Time.deltaTime;
+            _direction = 1;
+        }
+
+        return moveX;
     }
 
     #region ジャンプ処理
@@ -248,7 +260,7 @@ public class Player : SingletonMonoBehaviour<Player>
         float moveX = _avoidDistance / _avoidTime * deltaTime - _avoidedDistanceX;
         _avoidedDistanceX += moveX;
 
-        return moveX < 0 ? 0 : moveX;
+        return moveX * _direction;
     }
 
     private void EndAvoid()
