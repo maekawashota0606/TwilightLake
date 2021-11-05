@@ -171,3 +171,11 @@ System memory in use after: 64.0 MB.
 Unloading 4 unused Assets to reduce memory usage. Loaded Objects now: 1603.
 Total: 1.275000 ms (FindLiveObjects: 0.098700 ms CreateObjectMapping: 0.027200 ms MarkObjects: 1.139400 ms  DeleteObjects: 0.009000 ms)
 
+========================================================================
+Received Import Request.
+  Time since last request: 321.791866 seconds.
+  path: Assets/Prefabs/Player.prefab
+  artifactKey: Guid(aaad6adf7e9821547be9b8905b44ae4a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/Player.prefab using Guid(aaad6adf7e9821547be9b8905b44ae4a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b6e9285e2f82cbb1455efe5405c35948') in 0.057432 seconds
+  Import took 0.059382 seconds .
+
