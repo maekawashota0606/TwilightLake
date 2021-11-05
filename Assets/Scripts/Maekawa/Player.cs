@@ -68,18 +68,18 @@ public class Player : SingletonMonoBehaviour<Player>
         _isMoveLeft = false;
         _isMoveUp = false;
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetButton("Left"))
         {
             _isMoveRight = false;
             _isMoveLeft = true;
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetButton("Right"))
         {
             _isMoveRight = true;
             _isMoveLeft = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && isLanding)
+        if (Input.GetButtonDown("Jump") && isLanding)
             _isMoveUp = true;
         #endregion
 
@@ -121,10 +121,10 @@ public class Player : SingletonMonoBehaviour<Player>
         #endregion
 
         // çUåÇ
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetButtonDown("Attack"))
             Attack(AttackType.OnGround);
 
-        //
+        //Å@ñ≥ìGéûä‘åoâﬂèàóù
         if (_isInvalid)
             InvalidTimeCount();
     }
