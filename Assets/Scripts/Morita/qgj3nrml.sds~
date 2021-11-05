@@ -1,0 +1,113 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemyAI : MonoBehaviour
+{
+    //-----private-----//
+    [SerializeField,Header("移動速度")]
+    private float M_Speed;
+    private float x;
+    private float y;
+    private int direction;
+
+
+    //------public------//
+    [HideInInspector] public Transform target;
+    [HideInInspector] public bool inRange; //プレーヤーが範囲内にあるかどうかを確認します
+    public GameObject hotZone;
+    public GameObject triggerArea;
+    public Transform leftLimit;
+    public Transform rightLimit;
+
+    private void Awake()
+    {
+        SelectTarget();
+    }
+
+    private void FixedUpdate()
+    {
+        Move();
+
+        if (!InsideOfLimits())
+        {
+            SelectTarget();
+        }
+
+    }
+
+    void Move()
+    {
+        //ターゲット位置を一時変数に格納し、敵はX軸のみで移動させる
+        Vector2 targetPosition = new Vector2(target.position.x, transform.position.y);
+        //プレイヤーのXとY位置はYと等しい
+        transform.position = Vector2.MoveTowards(transform.position, targetPosition, M_Speed * Time.deltaTime);
+    }
+
+
+    /// <summary>
+    /// 方向のリミットを自動で選択する
+    /// </summary>
+    public void SelectTarget()
+    {
+        //左リミットまでの距離を計算
+        float distanceToLeft = Vector2.Distance(transform.position, leftLimit.position);
+        //右リミットまでの距離を計算
+        float distanceToRight = Vector2.Distance(transform.position, rightLimit.position);
+
+        //リミットを比較し、距離が遠いほうを移動ターゲットとする
+        if (distanceToLeft > distanceToRight)
+        {
+            target = leftLimit;
+        }
+        else
+        {
+            target = rightLimit;
+        }
+        Flip();
+    }
+    /// <summary>
+    /// 現在行動範囲の中に入っているのかをチェック
+    /// </summary>
+    /// <returns>入っていればtrue 入ってなければfalse</returns>
+    private bool InsideOfLimits()
+    {
+        return transform.position.x > leftLimit.position.x && transform.position.x < rightLimit.position.x;
+    }
+
+    /*
+    IEnumerator De()
+    {
+        while (true)
+        {
+            //Flip();
+            yield return new WaitForSeconds(1);
+        }
+
+    }*/
+
+    /// <summary>
+    /// 回転が必要かどうかを判断し
+    /// 回転させる
+    /// </summary>
+    public void Flip()
+    {
+        Vector3 rotation = transform.eulerAngles;
+        if (transform.position.x > target.position.x)
+        {
+            rotation.y = 0;
+            direction = -1;
+        }
+        else
+        {
+            rotation.y = 180.0f;
+            direction = 1;
+        }
+        transform.eulerAngles = rotation;
+    }
+
+    public int getDirection()
+    {
+        return direction;
+    }
+}
