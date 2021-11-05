@@ -17,4 +17,10 @@ public class TestEnemy : MonoBehaviour, IDamagable
         if (_hp <= 0)
             Destroy(this.gameObject);
     }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+            Player.Instance.RecieveDamage(10);
+    }
 }
