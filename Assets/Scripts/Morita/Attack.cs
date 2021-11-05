@@ -11,7 +11,6 @@ public class Attack : MonoBehaviour
     [SerializeField, Header("デフォルトクールダウン時間")]
     private float Default_Cooldown_time = 5;
 
-
     private float Cooldowntime;
     //クールダウン中かどうか
     private bool isCooldown = false;
