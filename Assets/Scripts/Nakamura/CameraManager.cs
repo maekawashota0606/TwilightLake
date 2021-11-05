@@ -21,5 +21,14 @@ public class CameraManager : MonoBehaviour
             cameraPos.x = playerPos.x;
             transform.position = cameraPos;
         }
+        if(playerPos.y < 0)
+        {
+            cameraPos.y = (float)(playerPos.y + 2.5);
+            transform.position = cameraPos;
+        }else if(playerPos.y > 0)
+        {
+            cameraPos.y = (float)(playerPos.y + 2.5);
+            transform.position = cameraPos;
+        }
     }
 }
