@@ -11,7 +11,7 @@ public class Player : SingletonMonoBehaviour<Player>
     [SerializeField]
     private float _horizontalVelocity = 10.0f;
     [SerializeField]
-    private float _initialVelocity = 0.1f;
+    private float _initialVelocityY = 0.1f;
     [SerializeField]
     private float _maxJumpTime = 0.75f;
     [SerializeField]
@@ -24,8 +24,13 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _invalidTime = 1.5f;
     [SerializeField]
     private float _FlickeringTime = 0.2f;
+    [SerializeField]
+    private float _offsetX = 0.25f;
+    [SerializeField]
+    private float _offsetY = -0.5f;
     private Animator _animator = null;
-    private SpriteRenderer  _spriteRenderer = null;
+    private SpriteRenderer _spriteRenderer = null;
+    private CapsuleCollider _capsuleCollider = null;
     private float _direction = 1;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
@@ -41,15 +46,16 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _currentAvoidedTime = 0;
     private bool _isAvoiding = false;
     private bool _isAvoidEnd = false;
+    private float _coliderHeight = 0;
     private PlayerState _playerState = PlayerState.Idle;
 
     private enum PlayerState : byte
     {
-       Idle,
-       Move,
-       Jump,
-       Attack,
-       Avoid
+        Idle,
+        Move,
+        Jump,
+        Attack,
+        Avoid
     }
 
     private enum AttackType : byte
@@ -63,6 +69,8 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _capsuleCollider = GetComponent<CapsuleCollider>();
+        _coliderHeight = _capsuleCollider.height;
         _isInvalid = true;
     }
 
@@ -71,14 +79,14 @@ public class Player : SingletonMonoBehaviour<Player>
         #region
         // Å´
         bool isLanding = CheckLanding();
-        _animator.SetBool("Landing", isLanding);
+        _animator.SetBool("IsLanding", isLanding);
         // Å©
-        Vector3 origin = transform.position + new Vector3(-0.25f, 0, 0);
+        Vector3 origin = transform.position + new Vector3(-_offsetX, 0, 0);
         Vector3 boxSize = new Vector3(0.5f, 1.25f, 1);
-        int layerMask = 1 << 6;
-        bool hitWallLeft = Physics.CheckBox(origin, boxSize / 2,Quaternion.identity, layerMask);
+        int layerMask = 1 << 3;
+        bool hitWallLeft = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
         // Å®
-        origin = transform.position + new Vector3(0.25f, 0, 0);
+        origin = transform.position + new Vector3(_offsetX, 0, 0);
         // ç∂âEÇ≈boxSizeÇÕìØÇ∂
         bool hitWallRight = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
         #endregion
@@ -87,12 +95,29 @@ public class Player : SingletonMonoBehaviour<Player>
         _isMoveRight = false;
         _isMoveLeft = false;
 
-       if(!Input.GetButton("Left") || !Input.GetButton("Right"))
-       {
+        if (!Input.GetButton("Left") || !Input.GetButton("Right"))
+        {
             if (Input.GetButton("Left"))
                 _isMoveLeft = true;
             else if (Input.GetButton("Right"))
                 _isMoveRight = true;
+        }
+        else if (Input.GetButtonDown("Down") && isLanding)
+        {
+            _animator.SetTrigger("Squat");
+            _capsuleCollider.height = _coliderHeight / 2;
+            _capsuleCollider.center = new Vector3(0, -0.5f, 0);
+        }
+
+        // ÇµÇ·Ç™Ç›íÜ
+        if (Input.GetButton("Down") && isLanding)
+        {
+            _animator.SetBool("IsSquating", true);
+        }
+        else
+        {
+            _capsuleCollider.height = _coliderHeight;
+            _animator.SetBool("IsSquating", false);
         }
 
         // çUåÇ
@@ -147,7 +172,10 @@ public class Player : SingletonMonoBehaviour<Player>
                 EndAvoid();
         }
 
-        // à⁄ìÆ
+        if (_animator.GetBool("IsSquating"))
+            moveX = 0;
+
+        // ï«îªíË
         if (hitWallLeft)
             moveX = Mathf.Clamp(moveX, 0, 100);
         if (hitWallRight)
@@ -165,10 +193,10 @@ public class Player : SingletonMonoBehaviour<Player>
 
     private bool CheckLanding()
     {
-        Vector3 origin = transform.position + new Vector3(0, -0.5f, 0);
+        Vector3 origin = transform.position + new Vector3(0, _offsetY, 0);
         Vector3 boxSize = new Vector3(0.1f, 1f, 1);
         float distance = 0.1f;
-        int layerMask = 1 << 6;
+        int layerMask = 1 << 3;
         return Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask);
     }
 
@@ -200,7 +228,7 @@ public class Player : SingletonMonoBehaviour<Player>
         }
             
         //float y = -20 * Mathf.Pow(deltaTime - _maxJumpTime, 2) + _maxJumpHeight;
-        float y =  _initialVelocity +  Mathf.Lerp(0, _maxJumpHeight, deltaTime / _maxJumpTime);
+        float y =  _initialVelocityY +  Mathf.Lerp(0, _maxJumpHeight - _initialVelocityY, deltaTime / _maxJumpTime);
         float moveY = y - _jumpedDistanceY;
         _jumpedDistanceY += moveY;
 

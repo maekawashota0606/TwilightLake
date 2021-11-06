@@ -207,13 +207,15 @@ MonoBehaviour:
   _HP: 100
   _attackPower: 10
   _horizontalVelocity: 10
-  _initialVelocity: 0.1
+  _initialVelocityY: 0.1
   _maxJumpTime: 0.2
   _maxJumpHeight: 3
   _avoidTime: 0.2
   _avoidDistance: 3.5
   _invalidTime: 1.5
   _FlickeringTime: 0.1
+  _offsetX: 0.25
+  _offsetY: -0.5
 --- !u!95 &2359525414435117483
 Animator:
   serializedVersion: 3
@@ -244,7 +246,7 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 1.78
+  m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2423938247861906777
