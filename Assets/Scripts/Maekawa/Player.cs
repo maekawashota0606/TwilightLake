@@ -102,7 +102,8 @@ public class Player : SingletonMonoBehaviour<Player>
             else if (Input.GetButton("Right"))
                 _isMoveRight = true;
         }
-        else if (Input.GetButtonDown("Down") && isLanding)
+        
+        if (Input.GetButtonDown("Down") && isLanding)
         {
             _animator.SetTrigger("Squat");
             _capsuleCollider.height = _coliderHeight / 2;
@@ -117,6 +118,7 @@ public class Player : SingletonMonoBehaviour<Player>
         else
         {
             _capsuleCollider.height = _coliderHeight;
+            _capsuleCollider.center = Vector3.zero;
             _animator.SetBool("IsSquating", false);
         }
 
