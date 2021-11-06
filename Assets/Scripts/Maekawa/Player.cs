@@ -192,9 +192,7 @@ public class Player : SingletonMonoBehaviour<Player>
                 _jumpRatio = Input.GetButtonUp("Jump") ? _miniJumpRatio : 1;
             }
             else
-            {
                 _currentJumpInputTime += Time.deltaTime;
-            }
         }
 
         #endregion
