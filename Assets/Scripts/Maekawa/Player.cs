@@ -21,6 +21,10 @@ public class Player : SingletonMonoBehaviour<Player>
     [SerializeField]
     private float _avoidDistance = 2.0f;
     [SerializeField]
+    private float _rigidFallTime = 1.5f;
+    [SerializeField]
+    private float _rigidFallDistance = 5.0f;
+    [SerializeField]
     private float _invalidTime = 1.5f;
     [SerializeField]
     private float _FlickeringTime = 0.2f;
@@ -47,6 +51,12 @@ public class Player : SingletonMonoBehaviour<Player>
     private bool _isAvoiding = false;
     private bool _isAvoidEnd = false;
     private float _coliderHeight = 0;
+    private float _CurrentRigidTime = 0;
+    private bool _isRigid = false;
+    private float _lastPosY = 0;
+    private float _currentFallDistance = 0;
+    private bool _isLanding = false;
+    private bool _lastIsLanding = false;
     private PlayerState _playerState = PlayerState.Idle;
 
     private enum PlayerState : byte
@@ -78,8 +88,36 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         #region
         // ↓
-        bool isLanding = CheckLanding();
-        _animator.SetBool("IsLanding", isLanding);
+        _lastIsLanding = _isLanding;
+        _isLanding = CheckLanding();
+        _animator.SetBool("IsLanding", _isLanding);
+
+        // 硬直中
+        if (_isRigid)
+        {
+            _CurrentRigidTime += Time.deltaTime;
+            if (_CurrentRigidTime >= _rigidFallTime)
+            {
+                _CurrentRigidTime = 0;
+                _isRigid = false;
+            }
+            else
+                return;
+        }
+        //着地したとき
+        if (!_lastIsLanding && _isLanding)
+        {
+            if (_currentFallDistance >= _rigidFallDistance)
+                _isRigid = true;
+        }
+        // 落下中なら
+        if (!_isLanding && _lastPosY > transform.position.y)
+            _currentFallDistance += _lastPosY - transform.position.y;
+        else
+            _currentFallDistance = 0;
+        _lastPosY = transform.position.y;
+ 
+
         // ←
         Vector3 origin = transform.position + new Vector3(-_offsetX, 0, 0);
         Vector3 boxSize = new Vector3(0.5f, 1.25f, 1);
@@ -103,7 +141,7 @@ public class Player : SingletonMonoBehaviour<Player>
                 _isMoveRight = true;
         }
         
-        if (Input.GetButtonDown("Down") && isLanding)
+        if (Input.GetButtonDown("Down") && _isLanding)
         {
             _animator.SetTrigger("Squat");
             _capsuleCollider.height = _coliderHeight / 2;
@@ -111,7 +149,7 @@ public class Player : SingletonMonoBehaviour<Player>
         }
 
         // しゃがみ中
-        if (Input.GetButton("Down") && isLanding)
+        if (Input.GetButton("Down") && _isLanding)
         {
             _animator.SetBool("IsSquating", true);
         }
@@ -126,7 +164,7 @@ public class Player : SingletonMonoBehaviour<Player>
         if (Input.GetButtonDown("Attack"))
             Attack(AttackType.OnGround);
         // ジャンプ
-        else if (Input.GetButtonDown("Jump") && isLanding)
+        else if (Input.GetButtonDown("Jump") && _isLanding)
         {
             _isJumping = true;
             _animator.SetTrigger("Jump");
@@ -148,7 +186,7 @@ public class Player : SingletonMonoBehaviour<Player>
             moveX = Move();
 
         // 重力
-        if(_playerState < PlayerState.Avoid && !isLanding)
+        if(_playerState < PlayerState.Avoid && !_isLanding)
             moveY = Physics.gravity.y * Time.deltaTime;
 
         // ジャンプ中
@@ -158,10 +196,10 @@ public class Player : SingletonMonoBehaviour<Player>
             moveY = Jump(_currentjumpedTime);
 
             // ジャンプ開始後、地面から離れたなら
-            if (!isLanding)
+            if (!_isLanding)
                 _isLeaveGround = true;
             // 一度飛んだ後、着地したならジャンプ終了
-            if (_isLeaveGround && isLanding || _isJumpEnd)
+            if (_isLeaveGround && _isLanding || _isJumpEnd)
                 EndJump();
         }
         //
@@ -252,11 +290,13 @@ public class Player : SingletonMonoBehaviour<Player>
     private void Attack(AttackType type)
     {
         _animator.SetInteger("Attack", (int)type);
+        _playerState = PlayerState.Attack;
     }
 
     // animatorから呼び出し
     private void EndAttack()
     {
+        _playerState = PlayerState.Idle;
         _animator.SetInteger("Attack", (int)AttackType.None);
     }
 
