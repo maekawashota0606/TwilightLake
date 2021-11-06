@@ -6,9 +6,21 @@ public class Knife : MonoBehaviour
 {
     [SerializeField,Header("ナイフの飛行速度")]
     private float flyspeed = 5.0f;
-
+    private EnemyAI enemyAI;
+    private void Start()
+    {
+        enemyAI = this.GetComponentInParent<EnemyAI>();
+    }
     private void FixedUpdate()
     {
-        transform.localPosition = new Vector3(transform.localPosition.x + flyspeed*-1, 0, 0);
+        transform.position += new Vector3(flyspeed * enemyAI.direction, 0, 0);
+    }
+    private void OnTriggerEnter(Collider collision)
+    {
+        //Layer 3はGround Layer 6はPlayer
+        if (collision.gameObject.layer == 3||collision.gameObject.layer==6)
+        {
+            Destroy(this.gameObject); 
+        }
     }
 }

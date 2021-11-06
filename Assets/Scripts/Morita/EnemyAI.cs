@@ -8,16 +8,24 @@ public class EnemyAI : MonoBehaviour
     //-----private-----//
     [SerializeField,Header("移動速度")]
     private float M_Speed;
+    [SerializeField,Header("見える範囲")]
+    private float SeeDistance;
+    [SerializeField, Header("この距離に入ったら移動停止")]
+    private float Attack_Distance;
+    [SerializeField, Header("クールダウン時間(0だったらデフォルトクールダウン時間が適応される)")]
+    private float CoolDownTime;
 
     private int HP;
     private float distance; //敵とプレイヤーの距離を保存する
-
+    private EnemyAttack e_attack;
+    private bool canMove;
+    
 
     /// <summary>
     /// <para>向き</para>
     /// <para>-1か1 にしかならないように設定する</para>
     /// </summary>
-    private int direction;
+    public int direction;
     #endregion
 
     #region Public Variables
@@ -29,26 +37,31 @@ public class EnemyAI : MonoBehaviour
     public GameObject triggerArea;
     public Transform leftLimit;
     public Transform rightLimit;
+    [SerializeField]
+    private Transform cast;
     #endregion
 
     private void Awake()
     {
         SelectTarget();
+        e_attack = this.transform.GetComponent<EnemyAttack>();
+        canMove = true;
     }
 
     private void FixedUpdate()
     {
-        Move();
-
+        if(canMove)
+        {
+            Move();
+        } 
         if (!InsideOfLimits()&&!inRange)
         {
             SelectTarget();
         }
         if(inRange)
         {
-            //攻撃処理
+            AttackMode();
         }
-
     }
 
     void AttackMode()
@@ -57,7 +70,16 @@ public class EnemyAI : MonoBehaviour
         distance = Vector2.Distance(transform.position, target.position);
 
         //ray castで直線上にPlayerいるかどうか確認する
-        //確認出来たら Attack.csのN_Attackを開始する(これに関してはEnemyAIとSprictを統合するかも)
+        if (CanSeePlayer())
+        {
+            CheckCanMove();
+            //確認出来たら Attack.csのN_Attackを開始する(これに関してはEnemyAIとSprictを統合するかも)
+            StartCoroutine(e_attack.N_Attack(CoolDownTime,cast.position));
+        }
+        else
+        {
+            CheckCanMove();
+        }
         //Cooldownをはさむ
         //FixedUpdate中、inRangeがtrueの限り、攻撃し続ける。
     }
@@ -68,6 +90,19 @@ public class EnemyAI : MonoBehaviour
         Vector3 targetPosition = new Vector3(target.position.x, transform.position.y,transform.position.z);
         //プレイヤーのXとY位置はYと等しい
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, M_Speed * Time.deltaTime);
+    }
+
+    void CheckCanMove()
+    {
+        distance = Vector2.Distance(transform.position, target.position);
+        if(Attack_Distance>=distance)
+        {
+            canMove = false;
+        }
+        else
+        {
+            canMove = true;
+        }
     }
 
 
@@ -132,8 +167,30 @@ public class EnemyAI : MonoBehaviour
         transform.eulerAngles = rotation;
     }
 
+    /// <summary>
+    /// Enemyの向きを取得
+    /// </summary>
+    /// <returns></returns>
     public int getDirection()
     {
         return direction;
+    }
+
+    private bool CanSeePlayer()
+    {
+        bool val = false;
+        Ray ray;
+        ray = new Ray(cast.position, new Vector3(direction,0,0));
+        RaycastHit Hitinfo;
+        //当たってるobjがplayerかどうかの判断
+        if(Physics.Raycast(ray, out Hitinfo, SeeDistance))
+        {
+            if(Hitinfo.collider.gameObject.tag =="Player")
+            {
+                val = true;
+            }
+        }
+        Debug.DrawRay(cast.position, new Vector3(direction * SeeDistance, 0, 0), color: Color.red);
+        return val;
     }
 }
