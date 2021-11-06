@@ -516,6 +516,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: _maxTimeJump
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: _rigidFallTime
       value: 1
       objectReference: {fileID: 0}

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : SingletonMonoBehaviour<Player>
@@ -13,9 +12,13 @@ public class Player : SingletonMonoBehaviour<Player>
     [SerializeField]
     private float _initialVelocityY = 0.1f;
     [SerializeField]
-    private float _maxJumpTime = 0.75f;
+    private float _maxTimeJump = 0.75f;
     [SerializeField]
-    private float _maxJumpHeight = 2.5f;
+    private float _maxHeightJump = 2.5f;
+    [SerializeField]
+    private float _maxTimeReceptionJump = 0.1f;
+    [SerializeField]
+    private float _miniJumpRatio = 0.5f;
     [SerializeField]
     private float _avoidTime = 0.2f;
     [SerializeField]
@@ -38,6 +41,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _direction = 1;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
+    private bool _isMoveUp = false;
     private bool _isJumping = false;
     private bool _isLeaveGround = false;
     private float _jumpedDistanceY = 0;
@@ -58,6 +62,8 @@ public class Player : SingletonMonoBehaviour<Player>
     private bool _isLanding = false;
     private bool _lastIsLanding = false;
     private PlayerState _playerState = PlayerState.Idle;
+    private float _currentJumpInputTime = 0;
+    private float _jumpRatio = 1;
 
     private enum PlayerState : byte
     {
@@ -116,7 +122,7 @@ public class Player : SingletonMonoBehaviour<Player>
         else
             _currentFallDistance = 0;
         _lastPosY = transform.position.y;
- 
+
 
         // ←
         Vector3 origin = transform.position + new Vector3(-_offsetX, 0, 0);
@@ -140,7 +146,7 @@ public class Player : SingletonMonoBehaviour<Player>
             else if (Input.GetButton("Right"))
                 _isMoveRight = true;
         }
-        
+
         if (Input.GetButtonDown("Down") && _isLanding)
         {
             _animator.SetTrigger("Squat");
@@ -163,12 +169,6 @@ public class Player : SingletonMonoBehaviour<Player>
         // 攻撃
         if (Input.GetButtonDown("Attack"))
             Attack(AttackType.OnGround);
-        // ジャンプ
-        else if (Input.GetButtonDown("Jump") && _isLanding)
-        {
-            _isJumping = true;
-            _animator.SetTrigger("Jump");
-        }
         // 回避
         else if (Input.GetButtonDown("Avoid"))
         {
@@ -176,6 +176,27 @@ public class Player : SingletonMonoBehaviour<Player>
             _animator.SetTrigger("Avoid");
             _playerState = PlayerState.Avoid;
         }
+
+        // ジャンプ
+        if (Input.GetButtonDown("Jump") && _isLanding)
+            _isMoveUp = true;
+
+        if(_isMoveUp)
+        {
+            if (Input.GetButtonUp("Jump") || _currentJumpInputTime > _maxTimeReceptionJump)
+            {
+                _isJumping = true;
+                _isMoveUp = false;
+                _currentJumpInputTime = 0;
+                _animator.SetTrigger("Jump");
+                _jumpRatio = Input.GetButtonUp("Jump") ? _miniJumpRatio : 1;
+            }
+            else
+            {
+                _currentJumpInputTime += Time.deltaTime;
+            }
+        }
+
         #endregion
 
         #region
@@ -193,7 +214,7 @@ public class Player : SingletonMonoBehaviour<Player>
         if (_isJumping)
         {
             _currentjumpedTime += Time.deltaTime;
-            moveY = Jump(_currentjumpedTime);
+            moveY = Jump(_currentjumpedTime, _jumpRatio);
 
             // ジャンプ開始後、地面から離れたなら
             if (!_isLanding)
@@ -259,20 +280,21 @@ public class Player : SingletonMonoBehaviour<Player>
     }
 
     #region ジャンプ処理
-    private float Jump(float deltaTime)
+    private float Jump(float deltaTime, float jumpRatio = 1)
     {
-        if (deltaTime >= _maxJumpTime)
+        if (deltaTime >= _maxTimeJump * jumpRatio)
         {
             _isJumpEnd = true;
             return 0;
         }
             
         //float y = -20 * Mathf.Pow(deltaTime - _maxJumpTime, 2) + _maxJumpHeight;
-        float y =  _initialVelocityY +  Mathf.Lerp(0, _maxJumpHeight - _initialVelocityY, deltaTime / _maxJumpTime);
+        float y =  (_initialVelocityY +  Mathf.Lerp(0, _maxHeightJump - _initialVelocityY, deltaTime / _maxTimeJump / jumpRatio));
+
         float moveY = y - _jumpedDistanceY;
         _jumpedDistanceY += moveY;
 
-        return moveY < 0 ? 0 : moveY;
+        return moveY < 0 ? 0 : moveY * jumpRatio;
     }
 
     private void EndJump()
