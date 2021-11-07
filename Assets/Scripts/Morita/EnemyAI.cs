@@ -25,6 +25,7 @@ public class EnemyAI : MonoBehaviour
     /// <para>Œü‚«</para>
     /// <para>-1‚©1 ‚É‚µ‚©‚È‚ç‚È‚¢‚æ‚¤‚Éİ’è‚·‚é</para>
     /// </summary>
+    [HideInInspector]
     public int direction;
     #endregion
 
