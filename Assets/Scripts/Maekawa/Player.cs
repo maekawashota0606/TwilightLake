@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class Player : SingletonMonoBehaviour<Player>
 {
+    public Vector3 center = Vector3.zero;
+    [SerializeField]
+    public float height = 2;
+    [SerializeField]
+    public float width = 1;
     [SerializeField]
     private int _HP = 100;
     [SerializeField]
@@ -248,6 +253,7 @@ public class Player : SingletonMonoBehaviour<Player>
             InvalidTimeCount();
 
         transform.localScale = new Vector3(_direction, 1, 1);
+        center = transform.position;
     }
 
     private bool CheckLanding()
