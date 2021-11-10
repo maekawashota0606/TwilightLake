@@ -15,7 +15,7 @@ public class TestEnemy : MonoBehaviour, IDamagable
     private void Update()
     {
         if (_hp <= 0)
-            Destroy(this.gameObject);
+            Destroy(gameObject.transform.root.gameObject);
     }
 
     private void OnTriggerStay(Collider other)
