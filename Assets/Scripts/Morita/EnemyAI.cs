@@ -40,6 +40,7 @@ public class EnemyAI : MonoBehaviour
     public Transform rightLimit;
     [SerializeField]
     private Transform cast;
+    [HideInInspector]public bool isAttackMode = false;
     #endregion
 
     private void Awake()
@@ -59,10 +60,11 @@ public class EnemyAI : MonoBehaviour
         {
             SelectTarget();
         }
-        if(inRange)
+        if (inRange)
         {
             AttackMode();
         }
+        c_AttackMode();
     }
 
     void AttackMode()
@@ -83,6 +85,20 @@ public class EnemyAI : MonoBehaviour
         }
         //Cooldown‚ğ‚Í‚³‚Ş
         //FixedUpdate’†AinRange‚ªtrue‚ÌŒÀ‚èAUŒ‚‚µ‘±‚¯‚éB
+    }
+
+    void c_AttackMode()
+    {
+        var render = this.GetComponent<Renderer>();
+        if (isAttackMode==false)
+        {
+            render.material.color = Color.red;
+            
+        }
+        else
+        {
+            render.material.color = Color.yellow;
+        }
     }
 
     void Move()
