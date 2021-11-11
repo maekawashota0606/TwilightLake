@@ -3,6 +3,9 @@ using UnityEngine;
 public class TestEnemy : MonoBehaviour, IDamagable
 {
     private int _hp = 100;
+    public Vector3 center = Vector3.zero;
+    public float height = 1;
+    public float width = 1;
     public SpriteRenderer sr = null;
 
     void IDamagable.AddDamage(int damage)
@@ -12,15 +15,21 @@ public class TestEnemy : MonoBehaviour, IDamagable
         Debug.Log(_hp);
     }
 
+    private void Start()
+    {
+        GameDirector.Instance.enemies.Add(gameObject.GetComponent<TestEnemy>());
+    }
     private void Update()
     {
+        center = transform.position;
         if (_hp <= 0)
-            Destroy(this.gameObject);
+            Destroy(gameObject.transform.root.gameObject);
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-            Player.Instance.RecieveDamage(10);
-    }
+    // コライダーを使わずに当たり判定をとる
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    if (other.gameObject.CompareTag("Player"))
+    //        Player.Instance.RecieveDamage(10);
+    //}
 }
