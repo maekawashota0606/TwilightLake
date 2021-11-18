@@ -328,6 +328,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92e6ac9953c68f345b4ab085dc40ac2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  center: {x: 0, y: 0, z: 0}
+  height: 1
+  width: 1
   sr: {fileID: 1300240328}
 --- !u!1 &1416086302
 GameObject:
@@ -584,6 +587,7 @@ GameObject:
   - component: {fileID: 1457785661}
   - component: {fileID: 1457785660}
   - component: {fileID: 1457785659}
+  - component: {fileID: 1457785662}
   m_Layer: 3
   m_Name: Ground (3)
   m_TagString: Ground
@@ -669,6 +673,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1457785662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457785658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b2cbdd5f18545d4cbae67da1ceadf4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: -4.28, y: 0.83, z: 0}
+  height: 0.1678
+  width: 4
 --- !u!1 &1634461435
 GameObject:
   m_ObjectHideFlags: 0
@@ -680,6 +699,7 @@ GameObject:
   - component: {fileID: 1634461438}
   - component: {fileID: 1634461437}
   - component: {fileID: 1634461436}
+  - component: {fileID: 1634461439}
   m_Layer: 3
   m_Name: Ground (4)
   m_TagString: Ground
@@ -759,12 +779,27 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1634461435}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.28, y: 2.92, z: 0}
-  m_LocalScale: {x: 4, y: 0.1678, z: 1}
+  m_LocalPosition: {x: 5.72, y: -2.54, z: 0}
+  m_LocalScale: {x: 4, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1634461439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634461435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b2cbdd5f18545d4cbae67da1ceadf4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: 5.72, y: -2.54, z: 0}
+  height: 3
+  width: 4
 --- !u!1 &1743744620
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,6 +811,7 @@ GameObject:
   - component: {fileID: 1743744622}
   - component: {fileID: 1743744621}
   - component: {fileID: 1743744623}
+  - component: {fileID: 1743744624}
   m_Layer: 3
   m_Name: Ground
   m_TagString: Ground
@@ -861,6 +897,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1743744624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743744620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b2cbdd5f18545d4cbae67da1ceadf4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: 0, y: -4.5, z: 0}
+  height: 1
+  width: 1000
 --- !u!1 &1898569099
 GameObject:
   m_ObjectHideFlags: 0
@@ -968,6 +1019,7 @@ GameObject:
   - component: {fileID: 1912508539}
   - component: {fileID: 1912508538}
   - component: {fileID: 1912508537}
+  - component: {fileID: 1912508540}
   m_Layer: 3
   m_Name: Ground (1)
   m_TagString: Ground
@@ -1053,6 +1105,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1912508540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1912508536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b2cbdd5f18545d4cbae67da1ceadf4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: -4.28, y: -1.5, z: 0}
+  height: 0.1678
+  width: 4
 --- !u!1 &2019355030
 GameObject:
   m_ObjectHideFlags: 0
@@ -1064,7 +1131,7 @@ GameObject:
   - component: {fileID: 2019355032}
   - component: {fileID: 2019355031}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: GameDirector
   m_TagString: Untagged
   m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -1079,9 +1146,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2019355030}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86c8f8363a1ebe1499357184b2334f63, type: 3}
+  m_Script: {fileID: 11500000, guid: b8f059fbda6d4d143b943b0b50415e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemies: []
+  grounds: []
 --- !u!4 &2019355032
 Transform:
   m_ObjectHideFlags: 0

@@ -1,13 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
-public class Player : SingletonMonoBehaviour<Player>
+public class Player : Object
 {
-    public Vector3 center = Vector3.zero;
-    [SerializeField]
-    public float height = 2;
-    [SerializeField]
-    public float width = 1;
     [SerializeField]
     private int _HP = 100;
     [SerializeField]
@@ -44,6 +39,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private SpriteRenderer _spriteRenderer = null;
     private CapsuleCollider _capsuleCollider = null;
     private float _direction = 1;
+    private Vector3 _velocity = Vector3.zero;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
     private bool _isMoveUp = false;
@@ -140,10 +136,11 @@ public class Player : SingletonMonoBehaviour<Player>
         bool hitWallRight = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
         #endregion
 
-        #region
+        #region 入力関連
         _isMoveRight = false;
         _isMoveLeft = false;
 
+        // 同時入力を無視
         if (!Input.GetButton("Left") || !Input.GetButton("Right"))
         {
             if (Input.GetButton("Left"))
@@ -152,6 +149,7 @@ public class Player : SingletonMonoBehaviour<Player>
                 _isMoveRight = true;
         }
 
+        // しゃがみ
         if (Input.GetButtonDown("Down") && _isLanding)
         {
             _animator.SetTrigger("Squat");
@@ -203,21 +201,15 @@ public class Player : SingletonMonoBehaviour<Player>
         #endregion
 
         #region
-        // 左右移動
-        float moveX = 0, moveY = 0;
-
-        if(_playerState < PlayerState.Attack)
-            moveX = Move();
-
         // 重力
         if(_playerState < PlayerState.Avoid && !_isLanding)
-            moveY = Physics.gravity.y * Time.deltaTime;
+            _velocity.y = Physics.gravity.y;
 
         // ジャンプ中
         if (_isJumping)
         {
             _currentjumpedTime += Time.deltaTime;
-            moveY = Jump(_currentjumpedTime, _jumpRatio);
+            transform.Translate(new Vector3(0, Jump(_currentjumpedTime, _jumpRatio)));
 
             // ジャンプ開始後、地面から離れたなら
             if (!_isLanding)
@@ -230,29 +222,39 @@ public class Player : SingletonMonoBehaviour<Player>
         if (_isAvoiding)
         {
             _currentAvoidedTime += Time.deltaTime;
-            moveX = Avoid(_currentAvoidedTime);
+            //moveX = Avoid(_currentAvoidedTime);
 
             if (_isAvoidEnd)
                 EndAvoid();
         }
 
         if (_animator.GetBool("IsSquating"))
-            moveX = 0;
+            _velocity.x = 0;
 
         // 壁判定
-        if (hitWallLeft)
-            moveX = Mathf.Clamp(moveX, 0, 100);
-        if (hitWallRight)
-            moveX = Mathf.Clamp(moveX, - 100, 0);
-        Vector3 move = new Vector3(moveX, moveY, 0);
-        transform.Translate(move);
+        //if (hitWallLeft)
+        //    moveX = Mathf.Clamp(moveX, 0, 100);
+        //if (hitWallRight)
+        //    moveX = Mathf.Clamp(moveX, - 100, 0);
         #endregion
 
         //　無敵時間経過処理
         if (_isInvalid)
             InvalidTimeCount();
+        // 移動
+        if (_playerState < PlayerState.Attack)
+            Move();
 
-        transform.localScale = new Vector3(_direction, 1, 1);
+        //
+        MyPhysics.BoxObject playerObj = new MyPhysics.BoxObject(center, height, width);
+        foreach (Ground ground in GameDirector.Instance.grounds)
+        {
+            MyPhysics.BoxObject groundObj = new MyPhysics.BoxObject(ground.center, ground.height, ground.width);
+            if(MyPhysics.IsBoxHit(playerObj, groundObj))
+            {
+                transform.Translate(MyPhysics.ComputeShiftPosition(playerObj, groundObj));
+            }
+        }
         center = transform.position;
     }
 
@@ -265,22 +267,11 @@ public class Player : SingletonMonoBehaviour<Player>
         return Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask);
     }
 
-    private float Move()
+    private void Move()
     {
-        float moveX = 0;
-
-        if (_isMoveLeft)
-        {
-            moveX = -_horizontalVelocity * Time.deltaTime;
-            _direction = -1;
-        }           
-        else if (_isMoveRight)
-        {
-            moveX = _horizontalVelocity * Time.deltaTime;
-            _direction = 1;
-        }
-
-        return moveX;
+        _direction = _velocity.x > 0 ? 1 : -1;
+        transform.localScale = new Vector3(_direction, 1, 1);
+        transform.Translate(_velocity * Time.deltaTime);
     }
 
     #region ジャンプ処理

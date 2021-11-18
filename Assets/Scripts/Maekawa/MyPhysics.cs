@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class MyPhysics : MonoBehaviour
 {
-    public struct Object
+    public struct BoxObject
     {
         public Vector3 center;
         public float height;
         public float width;
 
-        public Object(Vector3 position, float height, float width)
+        public BoxObject(Vector3 position, float height, float width)
         {
             this.center = position;
             this.height = height;
@@ -18,7 +18,7 @@ public class MyPhysics : MonoBehaviour
         }
     }
 
-    public static bool IsBoxHit(Object obj1, Object obj2)
+    public static bool IsBoxHit(BoxObject obj1, BoxObject obj2)
     {
         bool isHit = false;
         bool isMatchX = false;
@@ -38,5 +38,28 @@ public class MyPhysics : MonoBehaviour
             isHit = true;
 
         return isHit;
+    }
+
+    public static Vector3 ComputeShiftPosition(BoxObject targetObj, BoxObject staticObj)
+    {
+        float shiftX = 0;
+        float shiftY = 0;
+        // ‰¡
+        float distanceX = Mathf.Abs(targetObj.center.x - staticObj.center.x);
+        float lengthX = targetObj.width / 2 + staticObj.width / 2;
+        if (distanceX < lengthX)
+        {
+            shiftX = targetObj.center.x < staticObj.center.x ? (lengthX - distanceX) * -1 : lengthX - distanceX;
+        }
+        // c
+        float distanceY = Mathf.Abs(targetObj.center.y - staticObj.center.y);
+        float lengthY = targetObj.height / 2 + staticObj.height / 2;
+        if (distanceY < lengthY)
+        {
+            shiftY = targetObj.center.y < staticObj.center.y ? (lengthY - distanceY) * -1 : lengthY - distanceY;
+        }
+
+        Vector3 shiftPos = new Vector3(shiftX, shiftY);
+        return shiftPos;
     }
 }
