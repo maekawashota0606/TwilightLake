@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class SearchText : MonoBehaviour
 {
+    //Zƒ{ƒ^ƒ“‚Å’²‚×‚é‚ğo‚·
+
     public void ShowSearch()
     {
         gameObject.SetActive(true);

@@ -5,16 +5,13 @@ using UnityEngine.UI;
 
 public class TalkPanel : MonoBehaviour
 {
+    //会話のUIを出すスクリプト
+    //フェードを付ける予定
+
     public PlayerController playerController;
 
-    public void ShowPanel()
-    {
-        gameObject.SetActive(true);
-    }
-    public void HidePanel()
-    {
-        gameObject.SetActive(false);
-    }
+    
+    
 
     // Start is called before the first frame update
     void Start()

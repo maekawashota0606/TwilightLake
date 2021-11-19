@@ -7,7 +7,7 @@ using UnityEngine.UI;
 //YesとNoを選択できるようにする(選択してる矢印を付ける、点滅もできたらする)
 //Yesの時の分岐のリンクを作る
 //Noの時の分岐のリンクを作る
-//ウィンドウが出てる間は周りの動きを止める
+
 
 
 public class EventManager : MonoBehaviour
@@ -17,8 +17,13 @@ public class EventManager : MonoBehaviour
     public GameObject KANBAN;
     public SignBoard signBoard;
     public PlayerController playerController;
+    public GameObject sentence;
     public TalkPanel talkPanel;
     public SearchText searchText;
+
+
+    //皆で使うカルマポイント
+    public int KarmaPoint = 10;
 
     private void Start()
     {
@@ -28,17 +33,18 @@ public class EventManager : MonoBehaviour
 
     private void Update()
     {
-        if(KANBAN.GetComponent<SignBoard>().Aflagflag == true)
+        if(KANBAN.GetComponent<SignBoard>().Aflagflag == true )
         {
-            talkPanel.ShowPanel();
+            sentence.SetActive(true);
 
             Time.timeScale = 0f;
         }
 
-        if (KANBAN.GetComponent<SignBoard>().Aflagflag == false)
+        if (KANBAN.GetComponent<SignBoard>().Aflagflag == true && Input.GetKeyDown(KeyCode.Space))
         {
-            talkPanel.HidePanel();
-
+            KANBAN.GetComponent<SignBoard>().Aflagflag = false;
+            sentence.SetActive(false);
+            
             Time.timeScale = 1f;
         }
     }

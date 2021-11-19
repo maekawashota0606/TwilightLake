@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class SignBoard : MonoBehaviour
 {
+    //看板に付けるスクリプト
+
     //看板に入ってスペースが押されたかの判定
     public bool Aflagflag = false;
 
@@ -33,12 +35,12 @@ public class SignBoard : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        //プレイヤーが範囲外に出たら会話しない
-        if (KanbanHit == true)
-        {
-            KanbanHit = false;
-            searchText.HideSearch();
-        }
+            //プレイヤーが範囲外に出たら会話しない
+            if (KanbanHit == true)
+            {
+                KanbanHit = false;
+                searchText.HideSearch();
+            }
     }
 
     // Start is called before the first frame update
