@@ -1,5 +1,62 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &253563598018205274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8024383142288695389}
+  - component: {fileID: 4781343232743653087}
+  - component: {fileID: 2238878261848343570}
+  m_Layer: 0
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8024383142288695389
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 253563598018205274}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.063, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4721415924240064426}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4781343232743653087
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 253563598018205274}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.12950307, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2238878261848343570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 253563598018205274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e74961af8130685408e207b18722f44b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &489089426866629563
 GameObject:
   m_ObjectHideFlags: 0
@@ -138,6 +195,8 @@ Transform:
   - {fileID: 1344449895001270437}
   - {fileID: 6160094663073089747}
   - {fileID: 5664817060334784912}
+  - {fileID: 1373274383399198469}
+  - {fileID: 8024383142288695389}
   m_Father: {fileID: 6160094661752735255}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -236,6 +295,9 @@ MonoBehaviour:
   SeeDistance: 10
   Attack_Distance: 10
   CoolDownTime: 0
+  checkingWall: 0
+  isGround: 0
+  direction: 0
   target: {fileID: 0}
   inRange: 0
   hotZone: {fileID: 6160094663073089746}
@@ -243,6 +305,11 @@ MonoBehaviour:
   leftLimit: {fileID: 294454551769327590}
   rightLimit: {fileID: 6041312894229740785}
   cast: {fileID: 5664817060334784912}
+  Wallchecker: {fileID: 1373274383399198469}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  isAttackMode: 0
 --- !u!114 &5370175800495382911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,6 +445,50 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 33.729088, y: 24.138702, z: 1}
   m_Center: {x: -4.2127614, y: 8.407755, z: 0}
+--- !u!1 &7450729928112676349
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1373274383399198469}
+  - component: {fileID: 538601984427502202}
+  m_Layer: 0
+  m_Name: WallCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1373274383399198469
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7450729928112676349}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.873, y: 0.01, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4721415924240064426}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &538601984427502202
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7450729928112676349}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.32, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8482503432138236820
 GameObject:
   m_ObjectHideFlags: 0
