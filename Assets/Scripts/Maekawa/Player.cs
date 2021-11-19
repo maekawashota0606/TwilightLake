@@ -72,7 +72,8 @@ public class Player : Object
         Move,
         Jump,
         Attack,
-        Avoid
+        Dameged,
+        Avoid,
     }
 
     private enum AttackType : byte
@@ -194,7 +195,6 @@ public class Player : Object
         _velocity = Vector3.zero;
         _lastIsLanding = _isLanding;
         _isLanding = CheckLanding();
-        Debug.Log(_isLanding);
         _animator.SetBool("IsLanding", _isLanding);
 
         // Å©
@@ -352,7 +352,6 @@ public class Player : Object
     {
 
     }
-
     #endregion
 
     #region âÒîèàóù
@@ -390,7 +389,7 @@ public class Player : Object
         _playerState = PlayerState.Idle;
     }
     #endregion
-    public void RecieveDamage(int damage)
+    public void RecieveDamage(int damage, Vector3 Attacker)
     {
         if (_isInvalid || _isInvincible)
             return;
