@@ -329,6 +329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0, z: 0}
+  _offset: {x: 0, y: 0, z: 0}
   height: 1
   width: 1
   sr: {fileID: 1300240328}
@@ -519,6 +520,26 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: height
+      value: 2.35
+      objectReference: {fileID: 0}
+    - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: _offsetY
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: center.x
+      value: 1.06
+      objectReference: {fileID: 0}
+    - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: center.y
+      value: -2.7819998
+      objectReference: {fileID: 0}
+    - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: _offset.y
+      value: -0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: _maxTimeJump
       value: 0.35
       objectReference: {fileID: 0}
@@ -526,17 +547,21 @@ PrefabInstance:
       propertyPath: _rigidFallTime
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -4211511329440212186, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: _initialVelocityY
+      value: 0.75
+      objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_RootOrder
       value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.55
+      value: 1.06
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.21
+      value: -2.722
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -686,6 +711,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: -4.28, y: 0.83, z: 0}
+  _offset: {x: 0, y: 0, z: 0}
   height: 0.1678
   width: 4
 --- !u!1 &1634461435
@@ -798,6 +824,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 5.72, y: -2.54, z: 0}
+  _offset: {x: 0, y: 0, z: 0}
   height: 3
   width: 4
 --- !u!1 &1743744620
@@ -910,6 +937,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: -4.5, z: 0}
+  _offset: {x: 0, y: 0, z: 0}
   height: 1
   width: 1000
 --- !u!1 &1898569099
@@ -1118,6 +1146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: -4.28, y: -1.5, z: 0}
+  _offset: {x: 0, y: 0, z: 0}
   height: 0.1678
   width: 4
 --- !u!1 &2019355030
