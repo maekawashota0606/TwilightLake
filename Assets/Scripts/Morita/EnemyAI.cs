@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -14,12 +15,14 @@ public class EnemyAI : MonoBehaviour
     private float Attack_Distance;
     [SerializeField, Header("クールダウン時間(0だったらデフォルトクールダウン時間が適応される)")]
     private float CoolDownTime;
-    [SerializeField, Header("ジャンプ力")]
-    private float JumpForce;
+
+    [SerializeField]
+    private GameObject Axe;
 
     private int HP;
     private float distance; //敵とプレイヤーの距離を保存する
     private EnemyAttack e_attack;
+    private Animator animator;
     private bool canMove;
     private Rigidbody rb;
 
@@ -59,6 +62,15 @@ public class EnemyAI : MonoBehaviour
     private void Start()
     {
         rb = this.gameObject.GetComponent<Rigidbody>();
+        animator = transform.GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            Instantiate(Axe, cast.position, transform.rotation, transform.parent);
+        }
     }
 
     private void FixedUpdate()
@@ -130,7 +142,7 @@ public class EnemyAI : MonoBehaviour
     void CheckCanMove()
     {
         distance = Vector2.Distance(transform.position, target.position);
-        if(Attack_Distance>=distance&& !isNeedJump())
+        if(Attack_Distance>=distance)
         {
             canMove = false;
         }
@@ -138,6 +150,7 @@ public class EnemyAI : MonoBehaviour
         {
             canMove = true;
         }
+        animator.SetBool("IsMove", canMove);
     }
 
 
@@ -227,29 +240,5 @@ public class EnemyAI : MonoBehaviour
         }
         Debug.DrawRay(cast.position, new Vector3(direction * SeeDistance, 0, 0), color: Color.red);
         return val;
-    }
-    /// <summary>
-    /// ジャンプが必要かどうかをチェック
-    /// </summary>
-    /// <returns>trueかfalse</returns>
-    private bool isNeedJump()
-    {
-        bool isneed;
-        float y_dis;
-        y_dis = target.transform.position.y- transform.position.y ;
-        if(y_dis>0)
-        {
-            isneed = true;
-        }
-        else
-        {
-            isneed = false;
-        }
-        return isneed;
-    }
-
-    private void Jump()
-    {
-        rb.AddForce(new Vector3(0, JumpForce, 0), ForceMode.Impulse);
     }
 }
