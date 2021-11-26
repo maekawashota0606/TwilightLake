@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5987620515802590045}
   - component: {fileID: 3988442806465718631}
   - component: {fileID: 8774328661436754865}
-  - component: {fileID: 2976989700698245488}
   - component: {fileID: -1051507309030805164}
   m_Layer: 0
   m_Name: kannbann
@@ -57,6 +56,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -81,6 +82,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!54 &8774328661436754865
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -97,19 +99,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &2976989700698245488
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6543765177676664178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d41454c05ad3b43468894753fa425a01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Text: {fileID: 3125242262873472675, guid: 56bc13532fead2f4e88808fefe126f2c, type: 3}
 --- !u!65 &-1051507309030805164
 BoxCollider:
   m_ObjectHideFlags: 0

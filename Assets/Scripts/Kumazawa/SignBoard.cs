@@ -16,7 +16,6 @@ public class SignBoard : MonoBehaviour
     //プレイヤーが範囲外に出たかの判定
     public bool KanbanGetout = false;
 
-    public TalkPanel talkPanel;
     public SearchText searchText;
 
     //〇ボタンで調べるUIを取得するやつ
@@ -35,27 +34,11 @@ public class SignBoard : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-            //プレイヤーが範囲外に出たら会話しない
-            if (KanbanHit == true)
-            {
-                KanbanHit = false;
-                searchText.HideSearch();
-            }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //プレイヤーが看板に当たってスペースキーが押された時の処理
-        if (KanbanHit == true && Input.GetKeyDown(KeyCode.Space))
+        //プレイヤーが範囲外に出たら会話しない
+        if (KanbanHit == true)
         {
-            Aflagflag = true;
+            KanbanHit = false;
+            searchText.HideSearch();
         }
     }
 

@@ -6,29 +6,29 @@ public class PlayerController : MonoBehaviour
 {
     public Timer timer;
 
-    Rigidbody rb;
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("イベント発生");
-    }
+    [SerializeField]
+    private float _moveSpeed = 1.0f;//毎秒動かす距離
 
     // Start is called before the first frame update
     void Start()
     {
-        Time.timeScale = 0;
-        rb = GetComponent<Rigidbody>();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        //X軸の移動量を受け取る
-        float hrtl = Input.GetAxis("Horizontal");
-        //移動量を加えるPOWER
-        rb.velocity = new Vector2(hrtl, 0);
-        
-            Debug.Log(hrtl);
+        if(Input.GetKey(KeyCode.A))
+        {
+            float moveSpeed = _moveSpeed * Time.unscaledDeltaTime;
+            this.transform.Translate(-moveSpeed, 0.0f, 0.0f);
+        }
 
+        if (Input.GetKey(KeyCode.D))
+        {
+            float moveSpeed = _moveSpeed * Time.unscaledDeltaTime;
+            this.transform.Translate(moveSpeed, 0.0f, 0.0f);
+        }
     }
 
     void FixedUpdate()
