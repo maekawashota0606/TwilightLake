@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6098501097540857958}
   - component: {fileID: 5987620515802590045}
   - component: {fileID: 3988442806465718631}
-  - component: {fileID: 8774328661436754865}
   - component: {fileID: -1051507309030805164}
   m_Layer: 0
   m_Name: kannbann
@@ -83,22 +82,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!54 &8774328661436754865
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6543765177676664178}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!65 &-1051507309030805164
 BoxCollider:
   m_ObjectHideFlags: 0

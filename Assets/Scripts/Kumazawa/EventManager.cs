@@ -12,42 +12,42 @@ using UnityEngine.UI;
 
 public class EventManager : MonoBehaviour
 {
-    public Canvas Window;
-    public Image image;
-    public GameObject KANBAN;
-    public SignBoard signBoard;
-    public PlayerController playerController;
-    public GameObject sentence;
-    public TalkPanel talkPanel;
-    public SearchText searchText;
+    //public Canvas Window;
+    //public Image image;
+    //public GameObject KANBAN;
+    //public SignBoard signBoard;
+    //public PlayerController playerController;
+    //public GameObject sentence;
+    //public TalkPanel talkPanel;
+    //public SearchText searchText;
 
 
-    //皆で使うカルマポイント
-    public int KarmaPoint = 10;
+    ////皆で使うカルマポイント
+    //public int KarmaPoint = 10;
 
-    private void Start()
-    {
+    //private void Start()
+    //{
         
-    }
+    //}
 
 
-    private void Update()
-    {
-        if(KANBAN.GetComponent<SignBoard>().Aflagflag == true )
-        {
-            sentence.SetActive(true);
+    //private void Update()
+    //{
+    //    if(KANBAN.GetComponent<SignBoard>().Aflagflag == true )
+    //    {
+    //        sentence.SetActive(true);
 
-            Time.timeScale = 0f;
-        }
+    //        Time.timeScale = 0f;
+    //    }
 
-        if (KANBAN.GetComponent<SignBoard>().Aflagflag == true && Input.GetKeyDown(KeyCode.Space))
-        {
-            KANBAN.GetComponent<SignBoard>().Aflagflag = false;
-            sentence.SetActive(false);
+    //    if (KANBAN.GetComponent<SignBoard>().Aflagflag == true && Input.GetKeyDown(KeyCode.Space))
+    //    {
+    //        KANBAN.GetComponent<SignBoard>().Aflagflag = false;
+    //        sentence.SetActive(false);
             
-            Time.timeScale = 1f;
-        }
-    }
+    //        Time.timeScale = 1f;
+    //    }
+    //}
 
     //プレイヤーが看板の判定に入った時
     /*private void OnTriggerEnter(Collider collider)
