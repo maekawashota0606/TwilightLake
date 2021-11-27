@@ -176,9 +176,21 @@ PrefabInstance:
       value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 5370175800495382911, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
+      propertyPath: axe
+      value: 
+      objectReference: {fileID: 7756421644623699349, guid: ea0861466090e124aa0537d04a007438, type: 3}
+    - target: {fileID: 5370175800495382911, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
+      propertyPath: deb
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5370175800495382911, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
       propertyPath: cast
       value: 
       objectReference: {fileID: 2128189675}
+    - target: {fileID: 5370175800495382911, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
+      propertyPath: boomerang
+      value: 
+      objectReference: {fileID: 643811134334328861, guid: 7a3af6b274c8ae9448cd6bc7a2552ee5, type: 3}
     - target: {fileID: 5370175800495382911, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
       propertyPath: Default_Cooldown_time
       value: 5
@@ -698,7 +710,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1639882304}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

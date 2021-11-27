@@ -16,28 +16,19 @@ public class EnemyAI : MonoBehaviour
     [SerializeField, Header("クールダウン時間(0だったらデフォルトクールダウン時間が適応される)")]
     private float CoolDownTime;
 
-    [SerializeField]
-    private GameObject Axe;
-
     private int HP;
     private float distance; //敵とプレイヤーの距離を保存する
     private EnemyAttack e_attack;
     private Animator animator;
     private bool canMove;
     private Rigidbody rb;
-
-    /// <summary>
-    /// <para>向き</para>
-    /// <para>-1か1 にしかならないように設定する</para>
-    /// </summary>
-    [HideInInspector]
-    public int direction;
     #endregion
 
     #region Public Variables
     //------public------//
     [HideInInspector] public Transform target;
     [HideInInspector] public bool inRange; //プレーヤーが範囲内にあるかどうかを確認します
+    [HideInInspector, Tooltip("向き,-1か1 にしかならないように設定する")] public int direction;
     //Debug用
     public bool isGround;
     //------取得ゾーン-----//
@@ -64,15 +55,6 @@ public class EnemyAI : MonoBehaviour
         rb = this.gameObject.GetComponent<Rigidbody>();
         animator = transform.GetComponent<Animator>();
     }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Instantiate(Axe, cast.position, transform.rotation, transform.parent);
-        }
-    }
-
     private void FixedUpdate()
     {
         if (canMove)
