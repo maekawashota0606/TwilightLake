@@ -1,8 +1,11 @@
 using UnityEngine;
 
-public class TestEnemy : Object, IDamagable
+public class TestEnemy : MonoBehaviour, IDamagable
 {
     private int _hp = 100;
+    public Vector3 center = Vector3.zero;
+    public float height = 1;
+    public float width = 1;
     public SpriteRenderer sr = null;
 
     void IDamagable.AddDamage(int damage)

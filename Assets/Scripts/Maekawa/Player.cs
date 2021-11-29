@@ -1,14 +1,19 @@
 using System.Collections;
 using UnityEngine;
 
-public class Player : Object
+public class Player : SingletonMonoBehaviour<Player>
 {
+    public Vector3 center = Vector3.zero;
+    [SerializeField]
+    public float height = 2;
+    [SerializeField]
+    public float width = 1;
     [SerializeField]
     private int _HP = 100;
     [SerializeField]
     private int _attackPower = 10;
     [SerializeField]
-    private float _moveVelocityX = 10.0f;
+    private float _horizontalVelocity = 10.0f;
     [SerializeField]
     private float _initialVelocityY = 0.1f;
     [SerializeField]
@@ -39,7 +44,6 @@ public class Player : Object
     private SpriteRenderer _spriteRenderer = null;
     private CapsuleCollider _capsuleCollider = null;
     private float _direction = 1;
-    private Vector3 _velocity = Vector3.zero;
     private bool _isMoveRight = false;
     private bool _isMoveLeft = false;
     private bool _isMoveUp = false;
@@ -72,8 +76,7 @@ public class Player : Object
         Move,
         Jump,
         Attack,
-        Dameged,
-        Avoid,
+        Avoid
     }
 
     private enum AttackType : byte
@@ -94,7 +97,12 @@ public class Player : Object
 
     private void Update()
     {
-        # region　硬直処理
+        #region
+        // ↓
+        _lastIsLanding = _isLanding;
+        _isLanding = CheckLanding();
+        _animator.SetBool("IsLanding", _isLanding);
+
         // 硬直中
         if (_isRigid)
         {
@@ -119,10 +127,23 @@ public class Player : Object
         else
             _currentFallDistance = 0;
         _lastPosY = transform.position.y;
+
+
+        // ←
+        Vector3 origin = transform.position + new Vector3(-_offsetX, 0, 0);
+        Vector3 boxSize = new Vector3(0.5f, 1.25f, 1);
+        int layerMask = 1 << 3;
+        bool hitWallLeft = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
+        // →
+        origin = transform.position + new Vector3(_offsetX, 0, 0);
+        // 左右でboxSizeは同じ
+        bool hitWallRight = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
         #endregion
 
-        #region 入力関連
-        // 同時入力を無視
+        #region
+        _isMoveRight = false;
+        _isMoveLeft = false;
+
         if (!Input.GetButton("Left") || !Input.GetButton("Right"))
         {
             if (Input.GetButton("Left"))
@@ -131,7 +152,6 @@ public class Player : Object
                 _isMoveRight = true;
         }
 
-        // しゃがみ
         if (Input.GetButtonDown("Down") && _isLanding)
         {
             _animator.SetTrigger("Squat");
@@ -173,56 +193,31 @@ public class Player : Object
                 _isJumping = true;
                 _isMoveUp = false;
                 _currentJumpInputTime = 0;
-                _lastJumpingPosY = transform.position.y;
-                _F = _initialVelocityY;
                 _animator.SetTrigger("Jump");
-                // 小/大ジャンプ判定
                 _jumpRatio = Input.GetButtonUp("Jump") ? _miniJumpRatio : 1;
             }
             else
                 _currentJumpInputTime += Time.deltaTime;
         }
+
         #endregion
 
-        //　無敵時間経過処理
-        if (_isInvalid)
-            InvalidTimeCount();
-    }
+        #region
+        // 左右移動
+        float moveX = 0, moveY = 0;
 
-    private void FixedUpdate()
-    {
-        //
-        _velocity = Vector3.zero;
-        _lastIsLanding = _isLanding;
-        _isLanding = CheckLanding();
-        _animator.SetBool("IsLanding", _isLanding);
-
-        // ←
-        Vector3 origin = transform.position + new Vector3(-_offsetX, 0, 0);
-        Vector3 boxSize = new Vector3(0.5f, 1.25f, 1);
-        int layerMask = 1 << 3;
-        bool hitWallLeft = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
-        // →
-        origin = transform.position + new Vector3(_offsetX, 0, 0);
-        // 左右でboxSizeは同じ
-        bool hitWallRight = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
+        if(_playerState < PlayerState.Attack)
+            moveX = Move();
 
         // 重力
-        if (_playerState < PlayerState.Avoid && !_isLanding)
-            AddGravity();
-        // 左右移動
-        if (_isMoveLeft)
-            _velocity.x = _moveVelocityX * -1;
-        else if(_isMoveRight)
-            _velocity.x = _moveVelocityX;
-        _isMoveRight = false;
-        _isMoveLeft = false;
+        if(_playerState < PlayerState.Avoid && !_isLanding)
+            moveY = Physics.gravity.y * Time.deltaTime;
 
-        // ジャンプ
+        // ジャンプ中
         if (_isJumping)
         {
             _currentjumpedTime += Time.deltaTime;
-            Jump(_currentjumpedTime, _jumpRatio);
+            moveY = Jump(_currentjumpedTime, _jumpRatio);
 
             // ジャンプ開始後、地面から離れたなら
             if (!_isLanding)
@@ -231,96 +226,79 @@ public class Player : Object
             if (_isLeaveGround && _isLanding || _isJumpEnd)
                 EndJump();
         }
-        // 回避
+        //
         if (_isAvoiding)
         {
             _currentAvoidedTime += Time.deltaTime;
-            //moveX = Avoid(_currentAvoidedTime);
+            moveX = Avoid(_currentAvoidedTime);
 
             if (_isAvoidEnd)
                 EndAvoid();
         }
 
+        if (_animator.GetBool("IsSquating"))
+            moveX = 0;
+
         // 壁判定
         if (hitWallLeft)
-            _velocity.x = Mathf.Clamp(_velocity.x, 0, 100);
+            moveX = Mathf.Clamp(moveX, 0, 100);
         if (hitWallRight)
-            _velocity.x = Mathf.Clamp(_velocity.x, -100, 0);
-        // しゃがみ中なら
-        if (_animator.GetBool("IsSquating"))
-            _velocity.x = 0;
-        // 移動
-        if (_playerState < PlayerState.Attack)
-            Move();
+            moveX = Mathf.Clamp(moveX, - 100, 0);
+        Vector3 move = new Vector3(moveX, moveY, 0);
+        transform.Translate(move);
+        #endregion
 
-        //
-        SetCenter();
-        MyPhysics.BoxObject playerObj = new MyPhysics.BoxObject(center, height, width);
-        foreach (Ground ground in GameDirector.Instance.grounds)
-        {
-            MyPhysics.BoxObject groundObj = new MyPhysics.BoxObject(ground.center, ground.height, ground.width);
-            if (MyPhysics.IsBoxHit(playerObj, groundObj))
-            {
-                transform.Translate(MyPhysics.ComputeShiftPosition(playerObj, groundObj));
-            }
-        }
-    }
+        //　無敵時間経過処理
+        if (_isInvalid)
+            InvalidTimeCount();
 
-    private void OnDrawGizmos()
-    {
-        Vector3 origin = transform.position + new Vector3(0, _offsetY, 0);
-        Vector3 boxSize = new Vector3(1f, 0.1f, 1);
-        float distance = 0.25f;
-        int layerMask = 1 << 3;
-        Gizmos.DrawWireCube(origin + Vector3.down * distance, boxSize);
-        Gizmos.color = new Color(1, 0, 0);
-        DrawOutLine();
-
-        if (Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask))
-            Debug.Log("hit");
+        transform.localScale = new Vector3(_direction, 1, 1);
+        center = transform.position;
     }
 
     private bool CheckLanding()
     {
         Vector3 origin = transform.position + new Vector3(0, _offsetY, 0);
-        Vector3 boxSize = new Vector3(0.75f, 0.1f, 1);
-        float distance = 0.25f;
+        Vector3 boxSize = new Vector3(0.1f, 1f, 1);
+        float distance = 0.1f;
         int layerMask = 1 << 3;
         return Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask);
     }
 
-    private void Move()
+    private float Move()
     {
-        _direction = _velocity.x > 0 ? 1 : -1;
-        transform.localScale = new Vector3(_direction, 1, 1);
-        transform.Translate(_velocity * Time.deltaTime);
+        float moveX = 0;
+
+        if (_isMoveLeft)
+        {
+            moveX = -_horizontalVelocity * Time.deltaTime;
+            _direction = -1;
+        }           
+        else if (_isMoveRight)
+        {
+            moveX = _horizontalVelocity * Time.deltaTime;
+            _direction = 1;
+        }
+
+        return moveX;
     }
 
-    private void AddGravity()
-    {
-        _velocity.y = Physics.gravity.y;
-    }
     #region ジャンプ処理
-    private float _lastJumpingPosY = 0;
-    private float _F = 0;
-    private void Jump(float deltaTime, float jumpRatio = 1)
+    private float Jump(float deltaTime, float jumpRatio = 1)
     {
         if (deltaTime >= _maxTimeJump * jumpRatio)
         {
             _isJumpEnd = true;
-            return;
+            return 0;
         }
-
+            
         //float y = -20 * Mathf.Pow(deltaTime - _maxJumpTime, 2) + _maxJumpHeight;
-        //float moveY = y - _jumpedDistanceY;
-        //_jumpedDistanceY += moveY;
-        //float y =  (_initialVelocityY +  Mathf.Lerp(0, _maxHeightJump - _initialVelocityY, deltaTime / _maxTimeJump / jumpRatio));
+        float y =  (_initialVelocityY +  Mathf.Lerp(0, _maxHeightJump - _initialVelocityY, deltaTime / _maxTimeJump / jumpRatio));
 
-        float tempY = transform.position.y;
-        float y = (transform.position.y - _lastJumpingPosY) + _F;
-        _F = _initialVelocityY / 8;
-        transform.Translate(new Vector3(0, y));
-        _lastJumpingPosY = tempY;
+        float moveY = y - _jumpedDistanceY;
+        _jumpedDistanceY += moveY;
+
+        return moveY < 0 ? 0 : moveY * jumpRatio;
     }
 
     private void EndJump()
@@ -352,6 +330,7 @@ public class Player : Object
     {
 
     }
+
     #endregion
 
     #region 回避処理
@@ -389,7 +368,7 @@ public class Player : Object
         _playerState = PlayerState.Idle;
     }
     #endregion
-    public void RecieveDamage(int damage, Vector3 Attacker)
+    public void RecieveDamage(int damage)
     {
         if (_isInvalid || _isInvincible)
             return;
