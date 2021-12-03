@@ -50,6 +50,16 @@ public class GameManager : MonoBehaviour
     {
         C_position = StartPosition.position;
     }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            Point++;
+            Debug.Log(Point);
+        }
+    }
+
     public static void respawn(Transform index)
     {
         index.position = C_position;

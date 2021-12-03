@@ -130,6 +130,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5370175800495382911, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
+      propertyPath: axe
+      value: 
+      objectReference: {fileID: 7756421644623699349, guid: ea0861466090e124aa0537d04a007438, type: 3}
+    - target: {fileID: 5370175800495382911, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
+      propertyPath: boomerang
+      value: 
+      objectReference: {fileID: 643811134334328861, guid: 7a3af6b274c8ae9448cd6bc7a2552ee5, type: 3}
     - target: {fileID: 6160094661752735254, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
       propertyPath: m_Name
       value: Demonized_Soldier
