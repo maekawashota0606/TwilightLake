@@ -1,142 +1,119 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : Object
+public class Player : SingletonMonoBehaviour<Player>
 {
-    [SerializeField]
+    [SerializeField, Tooltip("HP"), Header("ForDesigner")]
     private int _HP = 100;
-    [SerializeField]
-    private int _attackPower = 10;
-    [SerializeField]
-    private float _moveVelocityX = 10.0f;
-    [SerializeField]
-    private float _initialVelocityY = 0.1f;
-    [SerializeField]
-    private float _maxTimeJump = 0.75f;
-    [SerializeField]
+    [SerializeField, Tooltip("重力の倍率")]
+    private float _gravityRatio = 1;
+    [SerializeField, Tooltip("移動速度")]
+    private float _velocityX = 7.5f;
+    //[SerializeField]
+    //private float _maxVelocityX = 2.5f;
+    //[SerializeField, Tooltip("Y軸最大速度")]
+    //private float _maxVelocityY = 10;
+    [SerializeField, Tooltip("ジャンプ力")]
+    private float _jumpPower = 15;
+    [SerializeField, Tooltip("ジャンプの最高高度")]
     private float _maxHeightJump = 2.5f;
-    [SerializeField]
-    private float _maxTimeReceptionJump = 0.1f;
-    [SerializeField]
-    private float _miniJumpRatio = 0.5f;
-    [SerializeField]
-    private float _avoidTime = 0.2f;
-    [SerializeField]
-    private float _avoidDistance = 2.0f;
-    [SerializeField]
-    private float _rigidFallTime = 1.5f;
-    [SerializeField]
-    private float _rigidFallDistance = 5.0f;
-    [SerializeField]
-    private float _invalidTime = 1.5f;
-    [SerializeField]
-    private float _FlickeringTime = 0.2f;
-    [SerializeField]
-    private float _offsetX = 0.25f;
-    [SerializeField]
-    private float _offsetY = -0.5f;
+    [SerializeField, Tooltip("回避で加える力")]
+    private float _avoidPower = 100;
+    [SerializeField, Tooltip("被ダメージ時の無敵時間")]
+    private float _invincibleTime = 1.5f;
+    [SerializeField, Tooltip("被ダメージ時に吹き飛ばされる力")]
+    private float _knockBackPower = 1000;
+    [SerializeField, Tooltip("落下硬直が発生する距離")]
+    private float _freezeFallDisitance = 3;
+    [SerializeField, Tooltip("落下硬直時間")]
+    private float _fallFreezeTime = 1f;
+    [SerializeField, Header("ForEngineer")]
+    private Vector3 _centerOffset = new Vector3(0, -0.5f);
+    private Rigidbody _rb = null;
     private Animator _animator = null;
     private SpriteRenderer _spriteRenderer = null;
-    private CapsuleCollider _capsuleCollider = null;
-    private float _direction = 1;
-    private Vector3 _velocity = Vector3.zero;
-    private bool _isMoveRight = false;
-    private bool _isMoveLeft = false;
-    private bool _isMoveUp = false;
-    private bool _isJumping = false;
-    private bool _isLeaveGround = false;
-    private float _jumpedDistanceY = 0;
-    private float _currentjumpedTime = 0;
-    private bool _isJumpEnd = false;
-    private bool _isInvalid = false;
+    private BoxCollider _boxCollider = null;
+    private bool _isInputRight = false;
+    private bool _isInputLeft = false;
+    private bool _isInputDowm = false;
+    private bool _isInputJump = false;
+    private bool _isInputAttack = false;
+    private bool _isInputAvoid = false;
+    private int _direction = 1;
+    private bool _isUseGravity = true;
+    private bool _isLanding = false;
+    private bool _isLastLanding = false;
     private bool _isInvincible = false;
-    private float _currentInvalidTime = 0;
-    private float _avoidedDistanceX = 0;
-    private float _currentAvoidedTime = 0;
-    private bool _isAvoiding = false;
-    private bool _isAvoidEnd = false;
-    private float _coliderHeight = 0;
-    private float _CurrentRigidTime = 0;
-    private bool _isRigid = false;
+    private bool _isAvoidInvincible = false;
+    private float _startJumpPositionY = 0;
+    private bool _isFreeze = false;
+    private float _currentFreezeTime = 0;
     private float _lastPosY = 0;
     private float _currentFallDistance = 0;
-    private bool _isLanding = false;
-    private bool _lastIsLanding = false;
-    private PlayerState _playerState = PlayerState.Idle;
-    private float _currentJumpInputTime = 0;
-    private float _jumpRatio = 1;
-
-    private enum PlayerState : byte
+    private float _currentInvincibleTime = 0;
+    private Vector3 _defaultColliderSize = Vector3.zero;
+    private Vector3 _colliderOffset = new Vector3(0, -0.1f);
+    private ActionState _actionState = ActionState.Idle;
+    private enum ActionState
     {
         Idle,
-        Move,
         Jump,
         Attack,
-        Dameged,
         Avoid,
+        Damaged
     }
 
-    private enum AttackType : byte
-    {
-        None,
-        OnGround,
-        Air
-    }
 
-    private void Start()
+    void Start()
     {
+        _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _capsuleCollider = GetComponent<CapsuleCollider>();
-        _coliderHeight = _capsuleCollider.height;
-        _isInvalid = true;
+        _boxCollider = GetComponent<BoxCollider>();
+        _defaultColliderSize = _boxCollider.size;
     }
 
     private void Update()
     {
-        # region　硬直処理
-        // 硬直中
-        if (_isRigid)
+        //
+        _isLastLanding = _isLanding;
+        _isLanding = CheckLanding();
+        //
+        CountInvincibleTime();
+
+        //
+        if (_isFreeze)
         {
-            _CurrentRigidTime += Time.deltaTime;
-            if (_CurrentRigidTime >= _rigidFallTime)
+            _currentFreezeTime += Time.deltaTime;
+            if (_currentFreezeTime >= _fallFreezeTime)
             {
-                _CurrentRigidTime = 0;
-                _isRigid = false;
+                _currentFreezeTime = 0;
+                _isFreeze = false;
             }
             else
                 return;
         }
         //着地したとき
-        if (!_lastIsLanding && _isLanding)
+        if (!_isLastLanding && _isLanding)
         {
-            if (_currentFallDistance >= _rigidFallDistance)
-                _isRigid = true;
+            if (_currentFallDistance >= _freezeFallDisitance)
+                _isFreeze = true;
         }
         // 落下中なら
-        if (!_isLanding && _lastPosY > transform.position.y)
+        else if (!_isLanding && _lastPosY > transform.position.y)
             _currentFallDistance += _lastPosY - transform.position.y;
         else
             _currentFallDistance = 0;
-        _lastPosY = transform.position.y;
-        #endregion
 
-        #region 入力関連
-        // 同時入力を無視
-        if (!Input.GetButton("Left") || !Input.GetButton("Right"))
-        {
-            if (Input.GetButton("Left"))
-                _isMoveLeft = true;
-            else if (Input.GetButton("Right"))
-                _isMoveRight = true;
-        }
+        _lastPosY = transform.position.y;
 
         // しゃがみ
         if (Input.GetButtonDown("Down") && _isLanding)
         {
             _animator.SetTrigger("Squat");
-            _capsuleCollider.height = _coliderHeight / 2;
-            _capsuleCollider.center = new Vector3(0, -0.5f, 0);
+            _boxCollider.size = new Vector3(_defaultColliderSize.x, _defaultColliderSize.y / 2);
+            _boxCollider.center = new Vector3(0, -0.65f, 0);
         }
 
         // しゃがみ中
@@ -146,291 +123,254 @@ public class Player : Object
         }
         else
         {
-            _capsuleCollider.height = _coliderHeight;
-            _capsuleCollider.center = Vector3.zero;
+            _boxCollider.size = _defaultColliderSize;
+            _boxCollider.center = _colliderOffset;
             _animator.SetBool("IsSquating", false);
         }
 
-        // 攻撃
-        if (Input.GetButtonDown("Attack"))
-            Attack(AttackType.OnGround);
-        // 回避
-        else if (Input.GetButtonDown("Avoid"))
+        // 同時入力を無視
+        if (!Input.GetButton("Left") || !Input.GetButton("Right"))
         {
-            _isAvoiding = true;
-            _animator.SetTrigger("Avoid");
-            _playerState = PlayerState.Avoid;
+            if (Input.GetButton("Left"))
+            {
+                _isInputLeft = true;
+                _direction = -1;
+            }
+            else if (Input.GetButton("Right"))
+            {
+                _isInputRight = true;
+                _direction = 1;
+            }
         }
 
         // ジャンプ
-        if (Input.GetButtonDown("Jump") && _isLanding)
-            _isMoveUp = true;
+        if (Input.GetButtonDown("Jump"))
+            _isInputJump = true;
 
-        if(_isMoveUp)
-        {
-            if (Input.GetButtonUp("Jump") || _currentJumpInputTime > _maxTimeReceptionJump)
-            {
-                _isJumping = true;
-                _isMoveUp = false;
-                _currentJumpInputTime = 0;
-                _lastJumpingPosY = transform.position.y;
-                _F = _initialVelocityY;
-                _animator.SetTrigger("Jump");
-                // 小/大ジャンプ判定
-                _jumpRatio = Input.GetButtonUp("Jump") ? _miniJumpRatio : 1;
-            }
-            else
-                _currentJumpInputTime += Time.deltaTime;
-        }
-        #endregion
+        // 攻撃
+        if (Input.GetButtonDown("Attack"))
+            _isInputAttack = true;
 
-        //　無敵時間経過処理
-        if (_isInvalid)
-            InvalidTimeCount();
+        // 回避
+        if (Input.GetButtonDown("Avoid"))
+            _isInputAvoid = true;
     }
 
     private void FixedUpdate()
     {
-        //
-        _velocity = Vector3.zero;
-        _lastIsLanding = _isLanding;
-        _isLanding = CheckLanding();
+        // 接地検知
         _animator.SetBool("IsLanding", _isLanding);
 
-        // ←
-        Vector3 origin = transform.position + new Vector3(-_offsetX, 0, 0);
-        Vector3 boxSize = new Vector3(0.5f, 1.25f, 1);
-        int layerMask = 1 << 3;
-        bool hitWallLeft = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
-        // →
-        origin = transform.position + new Vector3(_offsetX, 0, 0);
-        // 左右でboxSizeは同じ
-        bool hitWallRight = Physics.CheckBox(origin, boxSize / 2, Quaternion.identity, layerMask);
+        // 落下検知
+        if (_rb.velocity.y < 0 && !_isLanding)
+            _animator.SetBool("IsFalling", true);
+        else
+            _animator.SetBool("IsFalling", false);
 
-        // 重力
-        if (_playerState < PlayerState.Avoid && !_isLanding)
-            AddGravity();
-        // 左右移動
-        if (_isMoveLeft)
-            _velocity.x = _moveVelocityX * -1;
-        else if(_isMoveRight)
-            _velocity.x = _moveVelocityX;
-        _isMoveRight = false;
-        _isMoveLeft = false;
+        AddGravity();
 
-        // ジャンプ
-        if (_isJumping)
+        switch(_actionState)
         {
-            _currentjumpedTime += Time.deltaTime;
-            Jump(_currentjumpedTime, _jumpRatio);
+            case ActionState.Jump:
+                // ジャンプの終わりを検知(天井などに当たった場合着地できなくなるので要修正)
+                if (_maxHeightJump < transform.position.y - _startJumpPositionY)
+                    EndJump();
 
-            // ジャンプ開始後、地面から離れたなら
-            if (!_isLanding)
-                _isLeaveGround = true;
-            // 一度飛んだ後、着地したならジャンプ終了
-            if (_isLeaveGround && _isLanding || _isJumpEnd)
-                EndJump();
+                if (_isInputAttack)
+                    Attack();
+                else if (_isInputAvoid)
+                    Avoid();
+                else
+                    Move();
+                break;
+            case ActionState.Attack:
+                break;
+            case ActionState.Avoid:
+                //
+                break;
+            case ActionState.Damaged:
+                //TODO:ジャンプ中の被ダメなど重力おかしくなるかも
+                _isUseGravity = true;
+                break;
+            default:
+                if (_isInputAttack)
+                    Attack();
+                // ジャンプ(接地していなければスルー)
+                else if (_isInputJump && _isLanding)
+                    jump();
+                else if (_isInputAvoid)
+                    Avoid();
+                else
+                    Move();
+                break;
         }
-        // 回避
-        if (_isAvoiding)
-        {
-            _currentAvoidedTime += Time.deltaTime;
-            //moveX = Avoid(_currentAvoidedTime);
 
-            if (_isAvoidEnd)
-                EndAvoid();
-        }
-
-        // 壁判定
-        if (hitWallLeft)
-            _velocity.x = Mathf.Clamp(_velocity.x, 0, 100);
-        if (hitWallRight)
-            _velocity.x = Mathf.Clamp(_velocity.x, -100, 0);
-        // しゃがみ中なら
-        if (_animator.GetBool("IsSquating"))
-            _velocity.x = 0;
-        // 移動
-        if (_playerState < PlayerState.Attack)
-            Move();
-
-        //
-        SetCenter();
-        MyPhysics.BoxObject playerObj = new MyPhysics.BoxObject(center, height, width);
-        foreach (Ground ground in GameDirector.Instance.grounds)
-        {
-            MyPhysics.BoxObject groundObj = new MyPhysics.BoxObject(ground.center, ground.height, ground.width);
-            if (MyPhysics.IsBoxHit(playerObj, groundObj))
-            {
-                transform.Translate(MyPhysics.ComputeShiftPosition(playerObj, groundObj));
-            }
-        }
+        // 入力変数初期化
+        _isInputRight = false;
+        _isInputLeft = false;
+        _isInputDowm = false;
+        _isInputJump = false;
+        _isInputAttack = false;
+        _isInputAvoid = false;
     }
 
-    private void OnDrawGizmos()
+    public void AddDamage(int damage)
     {
-        Vector3 origin = transform.position + new Vector3(0, _offsetY, 0);
-        Vector3 boxSize = new Vector3(1f, 0.1f, 1);
-        float distance = 0.25f;
-        int layerMask = 1 << 3;
-        Gizmos.DrawWireCube(origin + Vector3.down * distance, boxSize);
-        Gizmos.color = new Color(1, 0, 0);
-        DrawOutLine();
-
-        if (Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask))
-            Debug.Log("hit");
+        _HP -= damage;
     }
 
+    public void AddDamage(int damage, Vector3 enemyPosition)
+    {
+        // 無敵なら処理しない
+        if (_isInvincible || _isAvoidInvincible)
+            return;
+
+        // ダメージを受ける
+        _HP -= damage;
+        // 一定時間無敵になる
+        _isInvincible = true;
+        _actionState = ActionState.Damaged;
+        _animator.SetTrigger("Damage");
+
+        // 攻撃側との距離を計算
+        //Vector3 dir = (transform.position - enemyPosition).normalized;
+        Vector3 dir = transform.position - enemyPosition;
+
+        // 左右にノックバック(敵と反対方向)
+        if (dir.x > 0)
+            dir = Vector3.right;
+        else
+            dir = Vector3.left;
+
+        // 上下に吹き飛んだほうが見栄えがいいかも？
+        _rb.velocity = Vector3.zero;
+        _rb.AddForce(dir * _knockBackPower, ForceMode.VelocityChange);
+
+        // 死亡処理
+        if (_HP <= 0)
+            Debug.Log("GameOver");
+    }
+
+    private void CountInvincibleTime()
+    {
+        if (_isInvincible)
+        {
+            _currentInvincibleTime += Time.deltaTime;
+            if (_invincibleTime <= _currentInvincibleTime)
+            {
+                _isInvincible = false;
+                _currentInvincibleTime = 0;
+            }               
+        }
+    }
+
+    private void AddGravity()
+    {
+        if (_isUseGravity)
+            _rb.AddForce(Physics.gravity * _gravityRatio, ForceMode.Acceleration);
+    }
+
+    /// <summary>
+    /// BoxCastを使用し接地しているならtrueを返します
+    /// </summary>
+    /// <returns></returns>
     private bool CheckLanding()
     {
-        Vector3 origin = transform.position + new Vector3(0, _offsetY, 0);
+        Vector3 origin = transform.position + _centerOffset;
         Vector3 boxSize = new Vector3(0.75f, 0.1f, 1);
-        float distance = 0.25f;
+        float distance = 0.75f;
+        // Groundレイヤーを指定
         int layerMask = 1 << 3;
+
         return Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask);
     }
 
     private void Move()
     {
-        _direction = _velocity.x > 0 ? 1 : -1;
+        if (_isInputRight)
+            _rb.velocity = new Vector3(_velocityX, _rb.velocity.y);
+        else if (_isInputLeft)
+            _rb.velocity = new Vector3(_velocityX * -1, _rb.velocity.y);
+        else
+            _rb.velocity = new Vector3(0, _rb.velocity.y);
+
         transform.localScale = new Vector3(_direction, 1, 1);
-        transform.Translate(_velocity * Time.deltaTime);
     }
 
-    private void AddGravity()
+    private void jump()
     {
-        _velocity.y = Physics.gravity.y;
-    }
-    #region ジャンプ処理
-    private float _lastJumpingPosY = 0;
-    private float _F = 0;
-    private void Jump(float deltaTime, float jumpRatio = 1)
-    {
-        if (deltaTime >= _maxTimeJump * jumpRatio)
-        {
-            _isJumpEnd = true;
-            return;
-        }
-
-        //float y = -20 * Mathf.Pow(deltaTime - _maxJumpTime, 2) + _maxJumpHeight;
-        //float moveY = y - _jumpedDistanceY;
-        //_jumpedDistanceY += moveY;
-        //float y =  (_initialVelocityY +  Mathf.Lerp(0, _maxHeightJump - _initialVelocityY, deltaTime / _maxTimeJump / jumpRatio));
-
-        float tempY = transform.position.y;
-        float y = (transform.position.y - _lastJumpingPosY) + _F;
-        _F = _initialVelocityY / 8;
-        transform.Translate(new Vector3(0, y));
-        _lastJumpingPosY = tempY;
+        _actionState = ActionState.Jump;
+        _animator.SetTrigger("Jump");
+        _startJumpPositionY = transform.position.y;
+        _isUseGravity = false;
+        _rb.AddForce(_jumpPower * Vector3.up, ForceMode.VelocityChange);
     }
 
     private void EndJump()
     {
-        _isLeaveGround = false;
-        _isJumping = false;
-        _isJumpEnd = false;
-        _currentjumpedTime = 0;
-        _jumpedDistanceY = 0;
-        _animator.SetTrigger("Fall");
+        _actionState = ActionState.Idle;
+        _isUseGravity = true;
+        _rb.velocity = new Vector3(_rb.velocity.x, 0);
     }
-    #endregion
 
-    #region 攻撃処理
-    private void Attack(AttackType type)
+    private void Attack()
     {
-        _animator.SetInteger("Attack", (int)type);
-        _playerState = PlayerState.Attack;
+        _actionState = ActionState.Attack;
+        _rb.velocity = Vector3.zero;
+        _animator.SetInteger("Attack", 1);
     }
 
-    // animatorから呼び出し
     private void EndAttack()
     {
-        _playerState = PlayerState.Idle;
-        _animator.SetInteger("Attack", (int)AttackType.None);
+        _isUseGravity = true;
+        _actionState = ActionState.Idle;
+        _animator.SetInteger("Attack", 0);
     }
 
-    public void AddDamage()
+    private void Avoid()
     {
-
-    }
-    #endregion
-
-    #region 回避処理
-    private void ActivateInvincible()
-    {
-        _isInvincible = true;
-    }
-
-    private void DeactivateInvincible()
-    {
-        _animator.SetTrigger("Fall");
-        _isInvincible = false;
-    }
-
-    private float Avoid(float deltaTime)
-    {
-        if (deltaTime >= _avoidTime)
-        {
-            _isAvoidEnd = true;
-            return 0;
-        }
-
-        float moveX = _avoidDistance / _avoidTime * deltaTime - _avoidedDistanceX;
-        _avoidedDistanceX += moveX;
-
-        return moveX * _direction;
+        _animator.SetTrigger("Avoid");
+        _actionState = ActionState.Avoid;
+        _isUseGravity = false;
+        _rb.velocity = Vector3.zero;
+        _rb.AddForce(Vector3.right * _avoidPower * _direction, ForceMode.VelocityChange);
     }
 
     private void EndAvoid()
     {
-        _avoidedDistanceX = 0;
-        _currentAvoidedTime = 0;
-        _isAvoiding = false;
-        _isAvoidEnd = false;
-        _playerState = PlayerState.Idle;
-    }
-    #endregion
-    public void RecieveDamage(int damage, Vector3 Attacker)
-    {
-        if (_isInvalid || _isInvincible)
-            return;
-
-        _HP -= damage;
-        Debug.Log($"{damage}ダメージを受けた(残りHP:{_HP})");
-        _isInvalid = true;
-        StartCoroutine(Flickering());
+        _isUseGravity = true;
+        _rb.velocity = Vector3.zero;
     }
 
-    private void InvalidTimeCount()
+    private void ActivateInvincible()
     {
-        _currentInvalidTime += Time.deltaTime;
-
-        if (_currentInvalidTime >= _invalidTime)
-        {
-            _currentInvalidTime = 0;
-            _isInvalid = false;
-        }
+        _isAvoidInvincible = true;
     }
 
-    private IEnumerator Flickering()
+    private void DeactivateInvincible()
     {
-        bool isTransparent = false;
+        _isAvoidInvincible = false;
+    }
 
-        while(_isInvalid)
-        {
-            if (isTransparent)
-            {
-                _spriteRenderer.color = new Color(1, 1, 1, 1);
-                isTransparent = false;
-            }
-            else
-            {
-                _spriteRenderer.color = new Color(1, 1, 1, 0.25f);
-                isTransparent = true;
-            }
-            yield return new WaitForSeconds(_FlickeringTime);
-        }
-        _spriteRenderer.color = new Color(1, 1, 1, 1);
+    private void EndDamaged()
+    {
+        _actionState = ActionState.Idle;
+        _rb.velocity = new Vector3(0, _rb.velocity.y);
+    }
 
-        yield break;
+    private void ChangeState(ActionState state)
+    {
+        _actionState = state;
+    }
+
+
+
+    // forDebug BoxCast可視化用
+    private void OnDrawGizmos()
+    {
+        Vector3 origin = transform.position + _centerOffset;
+        Vector3 boxSize = new Vector3(1f, 0.1f, 1);
+        float distance = 0.75f;
+        Gizmos.DrawWireCube(origin + Vector3.down * distance, boxSize);
     }
 }

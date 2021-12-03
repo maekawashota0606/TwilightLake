@@ -26,6 +26,6 @@ public class TestEnemy : Object, IDamagable
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
-            Player_.Instance.AddDamage(10, transform.position);
+            Player.Instance.AddDamage(10, transform.position);
     }
 }

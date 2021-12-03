@@ -519,81 +519,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -5855210410937994737, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_UseGravity
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: _jumpPower
-      value: 17.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: _movePower
-      value: 7.5
-      objectReference: {fileID: 0}
     - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: _avoidPower
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: _freezeTime
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: _gravityRatio
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: _maxVelocityY
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: _maxHeightJump
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: _knockBackPower
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1402081095, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1402081096, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_Color.a
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1402081096, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1402081096, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1402081096, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1805296897, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_Name
-      value: AttackHitBox
-      objectReference: {fileID: 0}
-    - target: {fileID: 1805296898, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1805296899, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_Size.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2359525414435117483, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2359525414435117483, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: m_ApplyRootMotion
-      value: 0
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_RootOrder
@@ -1222,8 +1150,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8f059fbda6d4d143b943b0b50415e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemies: []
-  grounds: []
 --- !u!4 &2019355032
 Transform:
   m_ObjectHideFlags: 0
