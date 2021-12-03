@@ -14,48 +14,14 @@ public class EnemyAttack : MonoBehaviour
     private CheckZone check;
     [SerializeField, Header("デフォルトクールダウン時間")]
     private float Default_Cooldown_time = 5;
-
-    public float point
-    {
-        get { return point; }
-        set
-        {
-            switch(point)
-            {
-                case 10:
-                    timezone = TimeZone.moring;
-                    break;
-                case 15:
-                    timezone = TimeZone.moring;
-                    break;
-                case 25:
-                    timezone = TimeZone.night;
-                    break;
-            }
-        }
-    }
     private float Cooldowntime;
     //クールダウン中かどうか
     private bool isCooldown = false;
     private GameObject Player;
-
-    enum TimeZone
-    {
-        moring,
-        noon,
-        night
-    }TimeZone timezone;
     private void Start()
     {
         //Player取得
         Player = GameObject.FindGameObjectWithTag("Player");
-    }
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space ))
-        {
-            point++;
-        }
     }
     /// <summary>
     /// 攻撃関数、クールダウンも含めております、
@@ -76,7 +42,7 @@ public class EnemyAttack : MonoBehaviour
             }
             isCooldown = true;
             //ナイフ召喚!!!!!!!!!!!!!!!!!!!
-            switch(timezone)
+            switch(GameManager.timezone)
             {
                 case TimeZone.moring:
                     Instantiate(Knife, pos, transform.rotation, transform);
