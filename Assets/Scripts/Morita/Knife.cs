@@ -18,9 +18,9 @@ public class Knife : MonoBehaviour
     private void OnTriggerEnter(Collider collision)
     {
         //Layer 3‚ÍGround Layer 6‚ÍPlayer
-        if (collision.gameObject.layer == 3||collision.gameObject.layer==6)
+        if (collision.gameObject.layer == 3 || collision.gameObject.layer == 6)
         {
-            Destroy(this.gameObject); 
+            Destroy(this.gameObject);
         }
     }
 }
