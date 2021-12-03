@@ -7,9 +7,9 @@ public class EnemyAI : MonoBehaviour
 {
     #region private Variables
     //-----private-----//
-    [SerializeField,Header("移動速度")]
+    [SerializeField, Header("移動速度")]
     private float M_Speed;
-    [SerializeField,Header("見える範囲")]
+    [SerializeField, Header("見える範囲")]
     private float SeeDistance;
     [SerializeField, Header("この距離に入ったら移動停止")]
     private float Attack_Distance;
@@ -41,27 +41,28 @@ public class EnemyAI : MonoBehaviour
     private Transform cast;
     [SerializeField]
     private LayerMask groundLayer;
-    [HideInInspector]public bool isAttackMode = false;
+    [HideInInspector] public bool isAttackMode = false;
     #endregion
 
     private void Awake()
     {
-        SelectTarget();
         e_attack = this.transform.GetComponent<EnemyAttack>();
-        canMove = true;
-    }
-    private void Start()
-    {
         rb = this.gameObject.GetComponent<Rigidbody>();
         animator = transform.GetComponent<Animator>();
+    }
+
+    private void Start()
+    {
+        SelectTarget();
+        canMove = true;
     }
     private void FixedUpdate()
     {
         if (canMove)
         {
             Move();
-        } 
-        if (!InsideOfLimits()&&!inRange)
+        }
+        if (!InsideOfLimits() && !inRange)
         {
             SelectTarget();
         }
@@ -86,7 +87,7 @@ public class EnemyAI : MonoBehaviour
         {
             CheckCanMove();
             //確認出来たら Attack.csのN_Attackを開始する(これに関してはEnemyAIとSprictを統合するかも)
-            StartCoroutine(e_attack.N_Attack(CoolDownTime,cast.position));
+            StartCoroutine(e_attack.N_Attack(CoolDownTime, cast.position));
         }
         else
         {
@@ -102,10 +103,10 @@ public class EnemyAI : MonoBehaviour
     void c_AttackMode()
     {
         var render = this.GetComponent<Renderer>();
-        if (isAttackMode==false)
+        if (isAttackMode == false)
         {
             render.material.color = Color.red;
-            
+
         }
         else
         {
@@ -116,7 +117,7 @@ public class EnemyAI : MonoBehaviour
     void Move()
     {
         //ターゲット位置を一時変数に格納し、敵はX軸のみで移動させる
-        Vector3 targetPosition = new Vector3(target.position.x, transform.position.y,transform.position.z);
+        Vector3 targetPosition = new Vector3(target.position.x, transform.position.y, transform.position.z);
         //プレイヤーのXとY位置はYと等しい
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, M_Speed * Time.deltaTime);
     }
@@ -124,7 +125,7 @@ public class EnemyAI : MonoBehaviour
     void CheckCanMove()
     {
         distance = Vector2.Distance(transform.position, target.position);
-        if(Attack_Distance>=distance)
+        if (Attack_Distance >= distance)
         {
             canMove = false;
         }
@@ -210,12 +211,12 @@ public class EnemyAI : MonoBehaviour
     {
         bool val = false;
         Ray ray;
-        ray = new Ray(cast.position, new Vector3(direction,0,0));
+        ray = new Ray(cast.position, new Vector3(direction, 0, 0));
         RaycastHit Hitinfo;
         //当たってるobjがplayerかどうかの判断
-        if(Physics.Raycast(ray, out Hitinfo, SeeDistance))
+        if (Physics.Raycast(ray, out Hitinfo, SeeDistance))
         {
-            if(Hitinfo.collider.gameObject.tag =="Player")
+            if (Hitinfo.collider.gameObject.tag == "Player")
             {
                 val = true;
             }
