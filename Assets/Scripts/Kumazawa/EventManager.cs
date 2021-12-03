@@ -13,21 +13,30 @@ using UnityEngine.UI;
 public class EventManager : MonoBehaviour
 {
     //public Canvas Window;
-    //public Image image;
     //public GameObject KANBAN;
-    //public SignBoard signBoard;
-    //public PlayerController playerController;
-    //public GameObject sentence;
-    //public TalkPanel talkPanel;
-    //public SearchText searchText;
+    //private PlayerController playerController;
+    //private SearchText searchText;
 
+    //[SerializeField]
+    //private EventMessage message;
+
+    //private void Start()
+    //{
+
+    //}
+
+    //private void Update()
+    //{
+    //    message.Event1();
+        
+    //}
 
     ////皆で使うカルマポイント
     //public int KarmaPoint = 10;
 
     //private void Start()
     //{
-        
+
     //}
 
 
@@ -44,7 +53,7 @@ public class EventManager : MonoBehaviour
     //    {
     //        KANBAN.GetComponent<SignBoard>().Aflagflag = false;
     //        sentence.SetActive(false);
-            
+
     //        Time.timeScale = 1f;
     //    }
     //}
