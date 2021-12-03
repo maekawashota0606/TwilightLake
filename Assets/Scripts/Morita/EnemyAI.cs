@@ -46,15 +46,14 @@ public class EnemyAI : MonoBehaviour
 
     private void Awake()
     {
+        SelectTarget();
         e_attack = this.transform.GetComponent<EnemyAttack>();
-        rb = this.gameObject.GetComponent<Rigidbody>();
-        animator = transform.GetComponent<Animator>();
+        canMove = true;
     }
-
     private void Start()
     {
-        SelectTarget();
-        canMove = true;
+        rb = this.gameObject.GetComponent<Rigidbody>();
+        animator = transform.GetComponent<Animator>();
     }
     private void FixedUpdate()
     {
