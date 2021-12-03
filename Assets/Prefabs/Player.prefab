@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1402081095}
   - component: {fileID: 1402081096}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 1805296898}
   - component: {fileID: 1805296899}
   - component: {fileID: 1805296900}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: AttackHitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 2359525414435117483}
   - component: {fileID: 877129339}
   - component: {fileID: 877129335}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -228,7 +228,7 @@ MonoBehaviour:
   _velocityX: 7.5
   _jumpPower: 17.5
   _maxHeightJump: 3
-  _avoidPower: 1000
+  _avoidPower: 15
   _invincibleTime: 1.5
   _knockBackPower: 10
   _freezeFallDisitance: 3
@@ -241,7 +241,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2423938246774166702}
-  m_Material: {fileID: 13400000, guid: 38e2feb4767c1de4f9b7b0c294923a12, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -257,7 +257,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2423938247861906778}
   - component: {fileID: 2423938247861906780}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}

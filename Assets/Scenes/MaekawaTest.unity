@@ -329,7 +329,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0, z: 0}
-  _offset: {x: 0, y: 0, z: 0}
   height: 1
   width: 1
   sr: {fileID: 1300240328}
@@ -519,10 +518,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
-      propertyPath: _avoidPower
-      value: 15
-      objectReference: {fileID: 0}
+    - target: {fileID: 877129335, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 38e2feb4767c1de4f9b7b0c294923a12, type: 2}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_RootOrder
       value: 9
@@ -584,7 +583,6 @@ GameObject:
   - component: {fileID: 1457785661}
   - component: {fileID: 1457785660}
   - component: {fileID: 1457785659}
-  - component: {fileID: 1457785662}
   m_Layer: 3
   m_Name: Ground (3)
   m_TagString: Ground
@@ -670,22 +668,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1457785662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1457785658}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b2cbdd5f18545d4cbae67da1ceadf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  center: {x: -4.28, y: 0.83, z: 0}
-  _offset: {x: 0, y: 0, z: 0}
-  height: 0.1678
-  width: 4
 --- !u!1 &1634461435
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,7 +679,6 @@ GameObject:
   - component: {fileID: 1634461438}
   - component: {fileID: 1634461437}
   - component: {fileID: 1634461436}
-  - component: {fileID: 1634461439}
   m_Layer: 3
   m_Name: Ground (4)
   m_TagString: Ground
@@ -783,22 +764,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1634461439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1634461435}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b2cbdd5f18545d4cbae67da1ceadf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  center: {x: 5.72, y: -2.54, z: 0}
-  _offset: {x: 0, y: 0, z: 0}
-  height: 3
-  width: 4
 --- !u!1 &1743744620
 GameObject:
   m_ObjectHideFlags: 0
@@ -810,7 +775,6 @@ GameObject:
   - component: {fileID: 1743744622}
   - component: {fileID: 1743744621}
   - component: {fileID: 1743744623}
-  - component: {fileID: 1743744624}
   m_Layer: 3
   m_Name: Ground
   m_TagString: Ground
@@ -896,22 +860,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1743744624
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1743744620}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b2cbdd5f18545d4cbae67da1ceadf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  center: {x: 0, y: -4.5, z: 0}
-  _offset: {x: 0, y: 0, z: 0}
-  height: 1
-  width: 1000
 --- !u!1 &1898569099
 GameObject:
   m_ObjectHideFlags: 0
@@ -1019,7 +967,6 @@ GameObject:
   - component: {fileID: 1912508539}
   - component: {fileID: 1912508538}
   - component: {fileID: 1912508537}
-  - component: {fileID: 1912508540}
   m_Layer: 3
   m_Name: Ground (1)
   m_TagString: Ground
@@ -1105,22 +1052,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1912508540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1912508536}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b2cbdd5f18545d4cbae67da1ceadf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  center: {x: -4.28, y: -1.5, z: 0}
-  _offset: {x: 0, y: 0, z: 0}
-  height: 0.1678
-  width: 4
 --- !u!1 &2019355030
 GameObject:
   m_ObjectHideFlags: 0
