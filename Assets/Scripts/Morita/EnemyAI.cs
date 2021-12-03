@@ -5,6 +5,14 @@ using DG.Tweening;
 
 public class EnemyAI : MonoBehaviour
 {
+    enum State
+    {
+        Idel,
+        Move,
+        Attack
+    }
+    [SerializeField]
+    State state;
     #region private Variables
     //-----private-----//
     [SerializeField,Header("移動速度")]
@@ -49,26 +57,34 @@ public class EnemyAI : MonoBehaviour
         e_attack = this.transform.GetComponent<EnemyAttack>();
         rb = this.gameObject.GetComponent<Rigidbody>();
         animator = transform.GetComponent<Animator>();
+
     }
 
     private void Start()
     {
         SelectTarget();
-        canMove = true;
     }
     private void FixedUpdate()
     {
-        if (canMove)
-        {
-            Move();
-        } 
         if (!InsideOfLimits()&&!inRange)
         {
             SelectTarget();
         }
         if (inRange)
         {
-            AttackMode();
+            state = State.Attack;
+        }
+        CheckCanMove();
+        switch (state)
+        {
+            case State.Idel:
+                break;
+            case State.Move:
+                Move();
+                break;
+            case State.Attack:
+                AttackMode();
+                break;
         }
         /*if(isNeedJump()&&isGround)
         {
@@ -85,13 +101,8 @@ public class EnemyAI : MonoBehaviour
         //ray castで直線上にPlayerいるかどうか確認する
         if (CanSeePlayer())
         {
-            CheckCanMove();
             //確認出来たら Attack.csのN_Attackを開始する(これに関してはEnemyAIとSprictを統合するかも)
             StartCoroutine(e_attack.N_Attack(CoolDownTime,cast.position));
-        }
-        else
-        {
-            CheckCanMove();
         }
         //Cooldownをはさむ
         //FixedUpdate中、inRangeがtrueの限り、攻撃し続ける。
@@ -114,6 +125,9 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// targetに向かって移動
+    /// </summary>
     void Move()
     {
         //ターゲット位置を一時変数に格納し、敵はX軸のみで移動させる
@@ -124,16 +138,10 @@ public class EnemyAI : MonoBehaviour
 
     void CheckCanMove()
     {
-        distance = Vector2.Distance(transform.position, target.position);
-        if(Attack_Distance>=distance)
+        if(!inRange)
         {
-            canMove = false;
+            state = State.Move;
         }
-        else
-        {
-            canMove = true;
-        }
-        animator.SetBool("IsMove", canMove);
     }
 
 
@@ -166,17 +174,6 @@ public class EnemyAI : MonoBehaviour
     {
         return transform.position.x > leftLimit.position.x && transform.position.x < rightLimit.position.x;
     }
-
-    /*
-    IEnumerator De()
-    {
-        while (true)
-        {
-            //Flip();
-            yield return new WaitForSeconds(1);
-        }
-
-    }*/
 
     /// <summary>
     /// 回転が必要かどうかを判断し
@@ -223,5 +220,10 @@ public class EnemyAI : MonoBehaviour
         }
         Debug.DrawRay(cast.position, new Vector3(direction * SeeDistance, 0, 0), color: Color.red);
         return val;
+    }
+    public IEnumerator Hard(float hardtime)
+    {
+        //ロジック止める動作
+        yield return new WaitForSeconds(hardtime);
     }
 }
