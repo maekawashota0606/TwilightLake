@@ -237,7 +237,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1300240327
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -246,7 +246,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300240326}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 0.2}
@@ -536,6 +536,10 @@ PrefabInstance:
       value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: _freezeTime
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: _gravityRatio
       value: 3.5
       objectReference: {fileID: 0}
@@ -546,6 +550,42 @@ PrefabInstance:
     - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: _maxHeightJump
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: _knockBackPower
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1402081095, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1402081096, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1402081096, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1402081096, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1402081096, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1805296897, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_Name
+      value: AttackHitBox
+      objectReference: {fileID: 0}
+    - target: {fileID: 1805296898, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1805296899, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: m_Size.x
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2359525414435117483, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_Enabled
@@ -561,11 +601,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.9
+      value: -5.33
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.76
+      value: 3.02
       objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1169,7 +1209,7 @@ GameObject:
   m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2019355031
 MonoBehaviour:
   m_ObjectHideFlags: 0

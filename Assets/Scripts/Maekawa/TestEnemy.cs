@@ -14,7 +14,7 @@ public class TestEnemy : Object, IDamagable
 
     private void Start()
     {
-        GameDirector.Instance.enemies.Add(gameObject.GetComponent<TestEnemy>());
+        //GameDirector.Instance.enemies.Add(gameObject.GetComponent<TestEnemy>());
     }
     private void Update()
     {
@@ -23,10 +23,9 @@ public class TestEnemy : Object, IDamagable
             Destroy(gameObject.transform.root.gameObject);
     }
 
-    // コライダーを使わずに当たり判定をとる
-    //private void OnTriggerStay(Collider other)
-    //{
-    //    if (other.gameObject.CompareTag("Player"))
-    //        Player.Instance.RecieveDamage(10);
-    //}
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+            Player_.Instance.AddDamage(10, transform.position);
+    }
 }
