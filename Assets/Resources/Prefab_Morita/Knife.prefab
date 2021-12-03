@@ -91,7 +91,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3388070419620562662}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -108,5 +108,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbed596c910243048b25176f64cbe006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 5995907167974431454, guid: 9f07e5717e030b34ea6e355be84a5b5e, type: 3}
   flyspeed: 0.5

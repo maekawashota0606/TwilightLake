@@ -8,7 +8,7 @@ public class CheckZone : MonoBehaviour
     /*SerializeField*/
     [SerializeField]
     private BoxCollider BC;
-    [SerializeField]
+    [SerializeField,Header("チェックゾーンの大きさ(単位:人数)")]
     private int Num_of_Player;
 
     /*--------------------------------------------------*/
