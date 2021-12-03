@@ -16,8 +16,12 @@ public class Player : SingletonMonoBehaviour<Player>
     //private float _maxVelocityY = 10;
     [SerializeField, Tooltip("ジャンプ力")]
     private float _jumpPower = 15;
-    [SerializeField, Tooltip("ジャンプの最高高度")]
-    private float _maxHeightJump = 2.5f;
+    [SerializeField, Tooltip("大ジャンプの最高高度")]
+    private float _maxHeightMaxJump = 2.5f;
+    [SerializeField, Tooltip("小ジャンプの最高高度")]
+    private float _maxHeightMiniJump = 1.5f;
+    [SerializeField, Tooltip("ジャンプ入力の最大受付時間")]
+    private float _maxTimeReceptionJump = 0.15f;
     [SerializeField, Tooltip("回避で加える力")]
     private float _avoidPower = 100;
     [SerializeField, Tooltip("被ダメージ時の無敵時間")]
@@ -38,6 +42,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private bool _isInputLeft = false;
     private bool _isInputDowm = false;
     private bool _isInputJump = false;
+    private bool _isLastInputJump = false;
     private bool _isInputAttack = false;
     private bool _isInputAvoid = false;
     private int _direction = 1;
@@ -46,6 +51,8 @@ public class Player : SingletonMonoBehaviour<Player>
     private bool _isLastLanding = false;
     private bool _isInvincible = false;
     private bool _isAvoidInvincible = false;
+    private float _currentJumpInputTime = 0;
+    private float _maxHeightJump = 0;
     private float _startJumpPositionY = 0;
     private bool _isFreeze = false;
     private float _currentFreezeTime = 0;
@@ -108,6 +115,7 @@ public class Player : SingletonMonoBehaviour<Player>
 
         _lastPosY = transform.position.y;
 
+
         // しゃがみ
         if (Input.GetButtonDown("Down") && _isLanding)
         {
@@ -144,7 +152,7 @@ public class Player : SingletonMonoBehaviour<Player>
         }
 
         // ジャンプ
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButton("Jump"))
             _isInputJump = true;
 
         // 攻撃
@@ -172,6 +180,7 @@ public class Player : SingletonMonoBehaviour<Player>
         switch(_actionState)
         {
             case ActionState.Jump:
+                _isUseGravity = false;
                 // ジャンプの終わりを検知(天井などに当たった場合着地できなくなるので要修正)
                 if (_maxHeightJump < transform.position.y - _startJumpPositionY)
                     EndJump();
@@ -184,20 +193,22 @@ public class Player : SingletonMonoBehaviour<Player>
                     Move();
                 break;
             case ActionState.Attack:
+                _isUseGravity = true;
                 break;
             case ActionState.Avoid:
+                _isUseGravity = false;
                 //
                 break;
             case ActionState.Damaged:
-                //TODO:ジャンプ中の被ダメなど重力おかしくなるかも
                 _isUseGravity = true;
                 break;
             default:
+                _isUseGravity = true;
+
                 if (_isInputAttack)
                     Attack();
-                // ジャンプ(接地していなければスルー)
-                else if (_isInputJump && _isLanding)
-                    jump();
+                else if (InputJump())
+                    Jump();
                 else if (_isInputAvoid)
                     Avoid();
                 else
@@ -209,6 +220,7 @@ public class Player : SingletonMonoBehaviour<Player>
         _isInputRight = false;
         _isInputLeft = false;
         _isInputDowm = false;
+        _isLastInputJump = _isInputJump;
         _isInputJump = false;
         _isInputAttack = false;
         _isInputAvoid = false;
@@ -297,19 +309,51 @@ public class Player : SingletonMonoBehaviour<Player>
         transform.localScale = new Vector3(_direction, 1, 1);
     }
 
-    private void jump()
+    private bool InputJump()
+    {
+        bool isJump = false;
+
+        // 押しっぱなし防止
+        if (!_isLanding)
+        {
+            _currentJumpInputTime = 0;
+            return false;
+        }
+
+        if (_isInputJump)
+        {
+            _currentJumpInputTime += Time.deltaTime;
+            // 大ジャンプ
+            if (_currentJumpInputTime > _maxTimeReceptionJump)
+            {
+                _maxHeightJump = _maxHeightMaxJump;
+                isJump = true;
+            }
+        }
+        // 小ジャンプ
+        else if (_isLastInputJump && !_isInputJump)
+        {
+            _maxHeightJump = _maxHeightMiniJump;
+            isJump = true;
+        }
+
+        return isJump;
+    }
+
+    private void Jump()
     {
         _actionState = ActionState.Jump;
+        _currentJumpInputTime = 0;
         _animator.SetTrigger("Jump");
         _startJumpPositionY = transform.position.y;
-        _isUseGravity = false;
+        //_isUseGravity = false;
         _rb.AddForce(_jumpPower * Vector3.up, ForceMode.VelocityChange);
     }
 
     private void EndJump()
     {
         _actionState = ActionState.Idle;
-        _isUseGravity = true;
+        //_isUseGravity = true;
         _rb.velocity = new Vector3(_rb.velocity.x, 0);
     }
 
@@ -322,7 +366,7 @@ public class Player : SingletonMonoBehaviour<Player>
 
     private void EndAttack()
     {
-        _isUseGravity = true;
+        //_isUseGravity = true;
         _actionState = ActionState.Idle;
         _animator.SetInteger("Attack", 0);
     }
@@ -331,14 +375,14 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         _animator.SetTrigger("Avoid");
         _actionState = ActionState.Avoid;
-        _isUseGravity = false;
+        //_isUseGravity = false;
         _rb.velocity = Vector3.zero;
         _rb.AddForce(Vector3.right * _avoidPower * _direction, ForceMode.VelocityChange);
     }
 
     private void EndAvoid()
     {
-        _isUseGravity = true;
+        //_isUseGravity = true;
         _rb.velocity = Vector3.zero;
     }
 
