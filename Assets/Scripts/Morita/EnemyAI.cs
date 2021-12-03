@@ -70,7 +70,7 @@ public class EnemyAI : MonoBehaviour
         {
             SelectTarget();
         }
-        if (inRange)
+        if (inRange&&CanSeePlayer())
         {
             state = State.Attack;
         }
@@ -138,6 +138,10 @@ public class EnemyAI : MonoBehaviour
 
     void CheckCanMove()
     {
+        if(inRange&!CanSeePlayer())
+        {
+            state = State.Move;
+        }
         if(!inRange)
         {
             state = State.Move;

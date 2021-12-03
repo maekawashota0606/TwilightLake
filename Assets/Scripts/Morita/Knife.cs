@@ -6,6 +6,8 @@ public class Knife : MonoBehaviour
 {
     [SerializeField,Header("ナイフの飛行速度")]
     private float flyspeed = 5.0f;
+    [SerializeField, Header("与えるダメージ")]
+    private int Damage;
     private EnemyAI enemyAI;
     private void Start()
     {
@@ -20,6 +22,10 @@ public class Knife : MonoBehaviour
         //Layer 3はGround Layer 6はPlayer
         if (collision.gameObject.layer == 3 || collision.gameObject.layer == 6)
         {
+            if(collision.gameObject.layer==6)
+            {
+                Player.Instance.AddDamage(Damage);
+            }
             Destroy(this.gameObject);
         }
     }

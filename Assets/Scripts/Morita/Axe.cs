@@ -9,6 +9,8 @@ public class Axe : MonoBehaviour
     private float FlyHight = 5.0f;
     [SerializeField, Header("“Í‚­‚Ü‚Å‚ÌŠÔ")]
     private float FlyDuration = 5.0f;
+    [SerializeField]
+    private int Damage;
 
     private EnemyAI enemyAI;
     private void Start()
@@ -22,6 +24,7 @@ public class Axe : MonoBehaviour
     {
         if(other.tag == "Player")
         {
+            Player.Instance.AddDamage(Damage);
             //‚±‚±‚Éƒ_ƒ[ƒW‚ğ—^‚¦‚éŠÖ”‚¢‚ê‚é
             this.gameObject.SetActive(false);
         }

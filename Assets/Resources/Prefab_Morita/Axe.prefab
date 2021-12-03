@@ -110,3 +110,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FlyHight: 8
   FlyDuration: 1
+  Damage: 10

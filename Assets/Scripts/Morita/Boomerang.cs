@@ -7,6 +7,8 @@ public class Boomerang : MonoBehaviour
 {
     [SerializeField,Header("経由するposition")]
     private Vector3[] pos;
+    [SerializeField]
+    private int Damage;
 
     private void Start()
     {
@@ -19,13 +21,13 @@ public class Boomerang : MonoBehaviour
                     gameObject.SetActive(false);
                 });
     }
-
-    void Boom()
+    private void OnTriggerEnter(Collider other)
     {
-        
-    }
-    IEnumerator cal(System.Action action)
-    {
-        yield return action;
+        if (other.tag == "Player")
+        {
+            Player.Instance.AddDamage(Damage);
+            //ここにダメージを与える関数いれる
+            this.gameObject.SetActive(false);
+        }
     }
 }
