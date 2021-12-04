@@ -372,7 +372,7 @@ GameObject:
   - component: {fileID: 134419531}
   - component: {fileID: 134419530}
   m_Layer: 5
-  m_Name: Message
+  m_Name: MessagePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -517,6 +517,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1cc2becbd6c6024b9fdca89012909b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Window: {fileID: 1681647076}
+  KANBAN: {fileID: 1477449566}
+  message: {fileID: 634204547}
 --- !u!4 &481851643
 Transform:
   m_ObjectHideFlags: 0
@@ -811,25 +814,13 @@ MonoBehaviour:
   signBoard: {fileID: 1477449568}
   timer: {fileID: 1961773652}
   searchText: {fileID: 1029314860}
+  cSV: {fileID: 472405740}
   ButtonYes: {fileID: 1307900071}
   ButtonNo: {fileID: 171032223}
   messageText: {fileID: 1574065440}
-  allMessage:
-  - 
-  - "\u93A7\u3092\u7740\u305F\u7537\u304C\u5EA7\u3063\u3066\u3044\u308B\u3088\u3046\u3060\u3002"
-  - "\u8ABF\u3079\u307E\u3059\u304B\uFF1F"
-  - "\u305D\u3053\u306B\u8AB0\u304B\u5C45\u308B\u306E\u304B\uFF1F"
-  - "\u898B\u3066\u306E\u901A\u308A\u3001\u305D\u3053\u3089\u306E\u9B54\u7269\u306B\u8972\u308F\u308C\u3066\u306A\u2026"
-  - "\u85AC\u8349\u306E\u4E00\u3064\u3067\u3082\u3042\u308C\u3070\u306A\u3093\u3068\u304B\u306A\u308B\u304B\u3082\u3057\u308C\u306A\u3044\u304C"
-  - "\u8CB4\u516C\u3001\u6301\u3063\u3066\u306F\u304A\u3089\u3093\u304B\uFF1F"
-  - "\u85AC\u8349\u3092\u6E21\u3057\u307E\u3059\u304B\uFF1F"
-  - "\u305D\u3046\u304B\u3001\u4ED5\u65B9\u304C\u306A\u3044\u3053\u3068\u3060\u3002"
-  - "\u3069\u3046\u3057\u305F\u3082\u306E\u304B\u2026"
-  - "\u305D\u3046\u304B\uFF01\u305D\u308C\u306F\u52A9\u304B\u308B\uFF01"
-  - "\u3053\u306E\u6069\u306F\u4E00\u751F\u5FD8\u308C\u3093\u305E\uFF01"
+  allMessage: []
   textspeed: 0.05
   clickIcon: {fileID: 611244210}
-  clickFlashTime: 1
 --- !u!1001 &800017270
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -837,6 +828,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 634204546}
     m_Modifications:
+    - target: {fileID: 9038302255191652198, guid: d387d4abebc044a459d293d5208ae75d, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 9038302256447176037, guid: d387d4abebc044a459d293d5208ae75d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1141,6 +1136,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 634204546}
     m_Modifications:
+    - target: {fileID: 9134992602217752898, guid: fa0a1b73e1e5cbf469911f85b6c185b9, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 9134992602293575362, guid: fa0a1b73e1e5cbf469911f85b6c185b9, type: 3}
       propertyPath: m_Name
       value: ButtonYes
@@ -1571,6 +1570,11 @@ PrefabInstance:
 --- !u!224 &1618422730 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3125242262873472679, guid: 4989e05741e17044d98d3829763ccd59, type: 3}
+  m_PrefabInstance: {fileID: 1618422729}
+  m_PrefabAsset: {fileID: 0}
+--- !u!223 &1681647076 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 3125242262873472678, guid: 4989e05741e17044d98d3829763ccd59, type: 3}
   m_PrefabInstance: {fileID: 1618422729}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1939323457

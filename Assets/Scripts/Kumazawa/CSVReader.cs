@@ -1,4 +1,4 @@
-using System.Collections;
+ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -6,26 +6,20 @@ using System.IO;
 public class CSVReader : MonoBehaviour
 {
     TextAsset csvFile;
-    List<string[]> csvDatas = new List<string[]>();
+    public List<string> csvDatas = new List<string>();
 
     // Start is called before the first frame update
-    void Start()
+    public void Read()
     {
-        csvFile = Resources.Load("Event1/Event") as TextAsset;
+        csvFile = Resources.Load("Event1/test") as TextAsset;
         StringReader reader = new StringReader(csvFile.text);
 
         while(reader.Peek() != -1)
         {
             string line = reader.ReadLine();
-            csvDatas.Add(line.Split(','));
+
+            if (line.Contains("#")) continue;//#‚ª“ü‚Á‚Ä‚¢‚é‚Æ‚±‚ë‚Í–³Ž‹‚·‚é
+            csvDatas.Add(line);//wakeru
         }
-
-        Debug.Log(csvDatas[1][1]);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }
