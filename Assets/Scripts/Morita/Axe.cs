@@ -24,9 +24,9 @@ public class Axe : MonoBehaviour
     {
         if(other.tag == "Player")
         {
-            Player.Instance.AddDamage(Damage);
+            //Player.Instance.AddDamage(Damage);
             //‚±‚±‚Éƒ_ƒ[ƒW‚ğ—^‚¦‚éŠÖ”‚¢‚ê‚é
-            this.gameObject.SetActive(false);
+            //this.gameObject.SetActive(false);
         }
     }
     /// <summary>

@@ -18,6 +18,9 @@ public class EnemyAttack : MonoBehaviour
     //クールダウン中かどうか
     private bool isCooldown = false;
     private GameObject Player;
+
+
+    
     private void Start()
     {
         //Player取得
@@ -42,7 +45,7 @@ public class EnemyAttack : MonoBehaviour
             }
             isCooldown = true;
             //ナイフ召喚!!!!!!!!!!!!!!!!!!!
-            switch(GameManager.timezone)
+            switch (GameManager.timezone)
             {
                 case TimeZone.moring:
                     Instantiate(Knife, pos, transform.rotation, transform);
@@ -54,6 +57,7 @@ public class EnemyAttack : MonoBehaviour
                     Instantiate(boomerang, pos, transform.rotation, transform);
                     break;
             }
+
             //クールダウン
             yield return new WaitForSeconds(Cooldowntime);
             //クールダウンend

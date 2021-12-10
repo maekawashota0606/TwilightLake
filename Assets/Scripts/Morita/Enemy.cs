@@ -6,6 +6,10 @@ public class Enemy : MonoBehaviour, IDamagable
 {
     [SerializeField]
     private float hp;
+    private EnemyAI enemyAI;
+
+    /// <summary>Š•Ší</summary>
+    //public WeaponManager.WeaponType holdweapon = WeaponManager.WeaponType.Knife;
 
     public float HitPoint
     {
@@ -25,8 +29,14 @@ public class Enemy : MonoBehaviour, IDamagable
             }
         }
     }
+
+    private void Awake()
+    {
+        enemyAI = transform.GetComponent<EnemyAI>();
+    }
     public void AddDamage(int damage)
     {
+        enemyAI.StartCoroutine("Hurt");
         HitPoint -= damage;
     }
 }

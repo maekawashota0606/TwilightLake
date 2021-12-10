@@ -115,8 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42fe7a803c526e54d9aee8f60399a8d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BC: {fileID: 8266350735917336551}
-  Num_of_Player: 6
+  Num_of_Player: 20
 --- !u!114 &1900395708480819803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,10 +291,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cffb951346d44bb4da202cd2eb5eed2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   M_Speed: 3
   SeeDistance: 10
   Attack_Distance: 10
   CoolDownTime: 0
+  HurtTime: 1
   target: {fileID: 0}
   inRange: 0
   direction: 0
@@ -322,11 +323,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Knife: {fileID: 3388070419620562662, guid: db4e5c9cdf9377948850bc30ff491dcd, type: 3}
-  axe: {fileID: 0}
-  boomerang: {fileID: 0}
+  axe: {fileID: 7756421644623699349, guid: ea0861466090e124aa0537d04a007438, type: 3}
+  boomerang: {fileID: 643811134334328861, guid: 7a3af6b274c8ae9448cd6bc7a2552ee5, type: 3}
   check: {fileID: 6812599732573432534}
   Default_Cooldown_time: 5
-  point: 0
+  weaponmanager: {fileID: 0}
 --- !u!114 &7750334105511288810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,7 +340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4f232d2fd41dc842863a0adca6b95f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitPoint: 100
+  hp: 100
 --- !u!95 &3930825273370320387
 Animator:
   serializedVersion: 3

@@ -7,9 +7,10 @@ public class EnemyAI : MonoBehaviour
 {
     enum State
     {
-        Idel,
-        Move,
-        Attack
+        Idel = 0x01,
+        Move = 0x02,
+        Attack = 0x04,
+        Hurt = 0x08
     }
     [SerializeField]
     State state;
@@ -23,6 +24,8 @@ public class EnemyAI : MonoBehaviour
     private float Attack_Distance;
     [SerializeField, Header("クールダウン時間(0だったらデフォルトクールダウン時間が適応される)")]
     private float CoolDownTime;
+    [SerializeField, Header("攻撃されたときの硬直時間")]
+    private float HurtTime;
 
     private int HP;
     private float distance; //敵とプレイヤーの距離を保存する
@@ -72,24 +75,27 @@ public class EnemyAI : MonoBehaviour
         }
         if (inRange&&CanSeePlayer())
         {
-            state = State.Attack;
+            AddAttackFlag();
         }
+
         CheckCanMove();
-        switch (state)
-        {
-            case State.Idel:
-                break;
-            case State.Move:
-                Move();
-                break;
-            case State.Attack:
-                AttackMode();
-                break;
+
+        if((state & State.Hurt) == State.Hurt)
+        { 
+        
         }
-        /*if(isNeedJump()&&isGround)
+        else
         {
-            Jump();
-        }*/
+            if ((state & State.Attack) == State.Attack)
+            {
+                AttackMode();
+            }
+            if ((state & State.Move) == State.Move)
+            {
+                Move();
+            }
+        }
+
         c_AttackMode();
     }
 
@@ -140,11 +146,15 @@ public class EnemyAI : MonoBehaviour
     {
         if(inRange&!CanSeePlayer())
         {
-            state = State.Move;
+            AddMoveFlag();
+        }
+        if((state & State.Attack)==State.Attack && CanSeePlayer())
+        {
+            DelMoveFlag();
         }
         if(!inRange)
         {
-            state = State.Move;
+            AddMoveFlag();
         }
     }
 
@@ -214,6 +224,7 @@ public class EnemyAI : MonoBehaviour
         Ray ray;
         ray = new Ray(cast.position, new Vector3(direction,0,0));
         RaycastHit Hitinfo;
+
         //当たってるobjがplayerかどうかの判断
         if(Physics.Raycast(ray, out Hitinfo, SeeDistance))
         {
@@ -225,9 +236,44 @@ public class EnemyAI : MonoBehaviour
         Debug.DrawRay(cast.position, new Vector3(direction * SeeDistance, 0, 0), color: Color.red);
         return val;
     }
-    public IEnumerator Hard(float hardtime)
+    public IEnumerator Hurt()
     {
         //ロジック止める動作
-        yield return new WaitForSeconds(hardtime);
+        state = state | State.Hurt;
+        yield return new WaitForSeconds(HurtTime);
+        state = state & ~State.Hurt;
+    }
+
+    private void AddIdelFlag()
+    {
+        state = state | State.Idel;
+    }
+    private void DelIdelFalg()
+    {
+        state = state & ~State.Idel;
+    }
+    private void AddMoveFlag()
+    {
+        state = state | State.Move;
+    }
+    private void DelMoveFlag()
+    {
+        state = state & ~State.Move;
+    }
+    private void AddAttackFlag()
+    {
+        state = state | State.Attack;
+    }
+    private void DelAttackFlag()
+    {
+        state = state & ~State.Attack;
+    }
+    private void AddHurtFlag()
+    {
+        state = state | State.Hurt;
+    }
+    private void DelHurtFlag()
+    {
+        state = State.Hurt;
     }
 }

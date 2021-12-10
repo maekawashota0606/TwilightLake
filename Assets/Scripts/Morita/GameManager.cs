@@ -68,4 +68,9 @@ public class GameManager : MonoBehaviour
     {
         C_position = index;
     }
+
+    void AddDamage(float damage)
+    {
+
+    }
 }

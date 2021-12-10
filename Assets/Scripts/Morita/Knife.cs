@@ -24,7 +24,7 @@ public class Knife : MonoBehaviour
         {
             if(collision.gameObject.layer==6)
             {
-                Player.Instance.AddDamage(Damage);
+                Player.Instance.AddDamage(Damage,transform.position);
             }
             Destroy(this.gameObject);
         }

@@ -12,14 +12,12 @@ public class CheckZone : MonoBehaviour
     /*--------------------------------------------------*/
     /*private Zone*/
     private BoxCollider BC;
-    private EnemyAI enemy;
     /*--------------------------------------------------*/
     /*public Zone*/
 
 
     private void Awake()
     {
-        enemy = GetComponentInParent<EnemyAI>();
         //Boxcollider取得
         BC = this.gameObject.GetComponent<BoxCollider>();
     }
@@ -28,6 +26,5 @@ public class CheckZone : MonoBehaviour
     {
         //Boxコライダー
         BC.size = new Vector3(Num_of_Player,BC.size.y,BC.size.z);
-        BC.center = new Vector3(enemy.getDirection() * Num_of_Player, BC.center.y, BC.center.z);
     }
 }
