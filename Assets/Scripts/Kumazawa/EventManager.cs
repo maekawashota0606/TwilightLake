@@ -13,14 +13,15 @@ public class EventManager : MonoBehaviour
     public GameObject KANBAN;
     private PlayerController playerController;
     private SearchText searchText;
+    public GameObject UIManager;
 
     [SerializeField]
     private EventMessage message;
 
-    //private void Start()
-    //{
-
-    //}
+    private void Start()
+    {
+        message = UIManager.GetComponent<EventMessage>();
+    }
 
     private void Update()
     {

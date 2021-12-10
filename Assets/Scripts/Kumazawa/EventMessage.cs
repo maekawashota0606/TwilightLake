@@ -2,40 +2,66 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Text.RegularExpressions;
 
 public class EventMessage : MonoBehaviour
 {
+    [Header("大元のキャンバス")]
     public Image canvas;
+    [Header("看板の取得")]
     public SignBoard signBoard;
+    [Header("タイマーの取得")]
     public Timer timer;
+    [Header("〇ボタンで調べるのUIの取得")]
     public SearchText searchText;
+    [Header("CSVの取得")]
     public CSVReader cSV;
 
-    public GameObject ButtonYes;
-    public GameObject ButtonNo;
-    
+    [Header("スクリプト{Yesボタン}")]
+    private ButtonScript buttonScriptYes;
+    [Header("スクリプト{Noボタン}")]
+    private ButtonScript buttonScriptNo;
+
+    [Header("Yesボタンが押されたときにisButtonClickYesを切り替えるスイッチの箱")]
+    [SerializeField]
+    private bool SwitchYes;
+    [Header("Noボタンが押されたときにisButtonClickNoを切り替えるスイッチの箱")]
+    [SerializeField]
+    private bool SwitchNo;
+
+    [Header("Yesボタンの取得")]
+    public Image ButtonYes;
+    [Header("Noボタンの取得")]
+    public Image ButtonNo;
+
+    //はいを押された時のboolを0と1で
+    private int yesid = 0;
+
+    //いいえを押された時のboolを0と1で
+    private int noid = 0;
+
     [Header("メッセージUI")]
     public Text messageText;
 
     //unity側で表示するテキストを書く
+    [Header("CSVデータが入るstringの箱")]
     [SerializeField]
     private List<string> allMessage;
 
     //何番目のメッセージか
     private int messsageNum = 0;
 
-    //テキストスピード
-    [SerializeField]
-    private float textspeed = 0.05f;
+    ////テキストスピード
+    //[SerializeField]
+    //private float textspeed = 0.05f;
 
-    //アイコンの点滅の経過時間
-    private float elapsedTime = 0f;
+    ////アイコンの点滅の経過時間
+    //private float elapsedTime = 0f;
 
-    //今見ている文字番号
-    private int nowTextNum = 0;
+    ////今見ている文字番号
+    //private int nowTextNum = 0;
 
     //マウスクリックを促すアイコン
+    [Header("クリックアイコンのゲームオブジェクトを取得")]
     public GameObject clickIcon;
 
     ////クリックアイコンの点滅秒数
@@ -45,8 +71,8 @@ public class EventMessage : MonoBehaviour
     //メッセージを全て表示したかどうか
     private bool isEndMessage = false;
 
-    //会話を再度表示するかどうかのやつ
-    private bool returnMessage = false;
+    ////会話を再度表示するかどうかのやつ
+    //private bool returnMessage = false;
 
     // Start is called before the first frame update
     void Start()
@@ -55,11 +81,14 @@ public class EventMessage : MonoBehaviour
         canvas.enabled = false;//enabledはImageを非表示なので
         messageText.enabled = false;
         clickIcon.SetActive(false);
-        ButtonYes.SetActive(false);
-        ButtonNo.SetActive(false);
+        ButtonYes.enabled = false;
+        ButtonNo.enabled = false;
 
         cSV.GetComponent<CSVReader>().Read();
         allMessage = cSV.GetComponent<CSVReader>().csvDatas;
+        buttonScriptYes = ButtonYes.GetComponent<ButtonScript>();
+        buttonScriptNo = ButtonNo.GetComponent<ButtonScript>();
+
     }
 
     public void Event1()
@@ -67,6 +96,8 @@ public class EventMessage : MonoBehaviour
         //kanbanが持ってるSihnBoardスクリプトの中のフラグ変数がtrueの時
         if (signBoard.KanbanHit == true && Input.GetKeyDown(KeyCode.Space))
         {
+            SwitchYes = buttonScriptYes.isButtonClickYes;
+            SwitchNo = buttonScriptNo.isButtonClickNo;
             canvas.enabled = true;
             clickIcon.SetActive(true);
             messageText.enabled = true;
@@ -76,47 +107,70 @@ public class EventMessage : MonoBehaviour
             if (messsageNum < allMessage.Count)
             {
                 //ここまでに表示しているテキストに残りのメッセージに対応した数字を足す
-                //messsageNum++;
-
                 messageText.text = allMessage[messsageNum];
                 string currentEvent = allMessage[messsageNum];
-                string[] datas = currentEvent.Split(',');
+                string[] csvdatas = currentEvent.Split(',');
+
                 Debug.Log("テキスト出たあ");
 
-                //messageNumがcaseの数字まで来たとき
+                //messageNumがcaseの数字まで来たとき(表示関係)
                 switch (messsageNum)
                 {
                     //2行目に来たら分岐のボタンを表示(caseの後ろの数字を変えると色んな行で分岐のボタンを表示できる)
-                    case 2:
+                    case 1:
                         Debug.Log("KUMAAAAAAAAAAAAAAAA");
                         clickIcon.SetActive(false);
-                        ButtonYes.SetActive(true);
-                        ButtonNo.SetActive(true);
+                        ButtonYes.enabled = true;
+                        ButtonNo.enabled = true;
+
+                        ////それぞれのボタンを押したら(datas[数字])の数字と同じ行数に飛ぶ
+                        //if (SwitchYes == true)
+                        //{
+                        //    yesid = int.Parse(cSV.csvDatas[2]);
+                        //    messsageNum = yesid;
+                        //}
+                        //if (SwitchNo == true)
+                        //{
+                        //    isEndMessage = true;
+                        //}
                         break;
                     //7行目に来たら分岐のボタンを表示(caseの後ろの数字を変えると色んな行で分岐のボタンを表示できる)
-                    case 7:
+                    case 6:
                         clickIcon.SetActive(false);
-                        ButtonYes.SetActive(true);
-                        ButtonNo.SetActive(true);
+                        ButtonYes.enabled = true;
+                        ButtonNo.enabled = true;
+
+                        ////それぞれのボタンを押したら(datas[数字])の数字と同じ行数に飛ぶ
+                        //if (SwitchYes == true)
+                        //{
+                        //    yesid = int.Parse(cSV.csvDatas[10]);
+                        //    messsageNum = yesid;
+                        //}
+                        //if (SwitchNo == true)
+                        //{
+                        //    noid = int.Parse(cSV.csvDatas[8]);
+                        //    messsageNum = noid;
+                        //}
                         break;
                     //他の行数に来たら会話を進める
                     default:
                         clickIcon.SetActive(true);
-                        ButtonYes.SetActive(false);
-                        ButtonNo.SetActive(false);
+                        ButtonYes.enabled = false;
+                        ButtonNo.enabled = false;
+                        messsageNum++;
                         break;
                 }
             }
             //messageNumがallMessageの数字より多いなら会話を終了する
             else
             {
-                nowTextNum = 0;
+                //nowTextNum = 0;
                 messsageNum++;
                 messageText.enabled = false;
                 clickIcon.SetActive(false);
                 canvas.enabled = false;
 
-                elapsedTime = 0f;
+                //elapsedTime = 0f;
 
                 //メッセージが全部表示されていたらゲームオブジェクト自体の削除
                 if (messsageNum >= allMessage.Count)

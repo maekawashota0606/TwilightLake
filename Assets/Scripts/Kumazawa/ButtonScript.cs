@@ -5,16 +5,22 @@ using UnityEngine.UI;
 
 public class ButtonScript : MonoBehaviour
 {
-    public ButtonScript button;
-    // Start is called before the first frame update
-    void Start()
+    //ƒ{ƒ^ƒ“‚ð‘å‚«‚­‚·‚é
+    public bool isButtonClickYes = false;
+    public bool isButtonClickNo = false;
+    EventMessage eventMessage;
+
+    private void Start()
     {
-        
+        eventMessage = GetComponent<EventMessage>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnClickYes()
     {
-   
+        isButtonClickYes = true;
+    }
+    public void OnClickNo()
+    {
+        isButtonClickNo = true;
     }
 }

@@ -11,7 +11,7 @@ public class CSVReader : MonoBehaviour
     // Start is called before the first frame update
     public void Read()
     {
-        csvFile = Resources.Load("Event1/test") as TextAsset;
+        csvFile = Resources.Load("Event1/Event") as TextAsset;
         StringReader reader = new StringReader(csvFile.text);
 
         while(reader.Peek() != -1)
