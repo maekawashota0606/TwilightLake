@@ -60,8 +60,6 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _lastPosY = 0;
     private float _currentFallDistance = 0;
     private float _currentInvincibleTime = 0;
-    private Vector3 _defaultColliderSize = Vector3.zero;
-    private Vector3 _colliderOffset = new Vector3(0, -0.1f);
     private ActionState _actionState = ActionState.Idle;
     private enum ActionState
     {
@@ -79,8 +77,6 @@ public class Player : SingletonMonoBehaviour<Player>
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _boxCollider = GetComponent<BoxCollider>();
-        _defaultColliderSize = _boxCollider.size;
     }
 
     private void Update()
@@ -120,23 +116,13 @@ public class Player : SingletonMonoBehaviour<Player>
 
         // ‚µ‚á‚ª‚Ý
         if (Input.GetButtonDown("Down") && _isLanding)
-        {
             _animator.SetTrigger("Squat");
-            _boxCollider.size = new Vector3(_defaultColliderSize.x, _defaultColliderSize.y / 2);
-            _boxCollider.center = new Vector3(0, -0.65f, 0);
-        }
 
         // ‚µ‚á‚ª‚Ý’†
         if (Input.GetButton("Down") && _isLanding)
-        {
             _animator.SetBool("IsSquating", true);
-        }
         else
-        {
-            _boxCollider.size = _defaultColliderSize;
-            _boxCollider.center = _colliderOffset;
             _animator.SetBool("IsSquating", false);
-        }
 
         // “¯Žž“ü—Í‚ð–³Ž‹
         if (!Input.GetButton("Left") || !Input.GetButton("Right"))
@@ -341,6 +327,7 @@ public class Player : SingletonMonoBehaviour<Player>
         else
             _rb.velocity = new Vector3(0, _rb.velocity.y);
 
+        _animator.SetFloat("Speed", Mathf.Abs(_rb.velocity.x));
         transform.localScale = new Vector3(_direction, 1, 1);
     }
 
