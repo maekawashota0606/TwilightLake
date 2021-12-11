@@ -21,6 +21,14 @@ public class EventMessage : MonoBehaviour
     [Header("スクリプト{Noボタン}")]
     private ButtonScript buttonScriptNo;
 
+    [Header("Yesボタンのテキスト")]
+    [SerializeField]
+    private Text ButtonTextYes;
+
+    [Header("Noボタンのテキスト")]
+    [SerializeField]
+    private Text ButtonTextNo;
+
     [Header("Yesボタンが押されたときにisButtonClickYesを切り替えるスイッチの箱")]
     [SerializeField]
     private bool SwitchYes;
@@ -33,11 +41,11 @@ public class EventMessage : MonoBehaviour
     [Header("Noボタンの取得")]
     public Image ButtonNo;
 
-    //はいを押された時のboolを0と1で
-    private int yesid = 0;
+    ////はいを押された時のboolを0と1で
+    //private int yesid = 0;
 
-    //いいえを押された時のboolを0と1で
-    private int noid = 0;
+    ////いいえを押された時のboolを0と1で
+    //private int noid = 0;
 
     [Header("メッセージUI")]
     public Text messageText;
@@ -49,6 +57,19 @@ public class EventMessage : MonoBehaviour
 
     //何番目のメッセージか
     private int messsageNum = 0;
+
+    //ボタンの大きさを操る場所の箱
+    private Vector2 TFBaseYes;
+
+    //ボタンの大きさを操る場所の箱
+    private Vector2 TFBaseNo;
+
+    //それぞれのボタンを大きくする値をUnity上からも設定できるように
+    [Header("ボタンのX軸の大きさ変更値")]
+    public float ButtonBigerX = 1;
+
+    [Header("ボタンのX軸の大きさ変更値")]
+    public float ButtonBigerY = 1;
 
     ////テキストスピード
     //[SerializeField]
@@ -68,8 +89,8 @@ public class EventMessage : MonoBehaviour
     //[SerializeField]
     //private float clickFlashTime = 0.2f;
 
-    //メッセージを全て表示したかどうか
-    private bool isEndMessage = false;
+    ////メッセージを全て表示したかどうか
+    //private bool isEndMessage = false;
 
     ////会話を再度表示するかどうかのやつ
     //private bool returnMessage = false;
@@ -77,18 +98,19 @@ public class EventMessage : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //UIを全て非表示にする
-        canvas.enabled = false;//enabledはImageを非表示なので
+        //ここでUIを全て非表示にする。(enabledはImageを非表示なので取得は出来る)
+        canvas.enabled = false;//
         messageText.enabled = false;
         clickIcon.SetActive(false);
         ButtonYes.enabled = false;
         ButtonNo.enabled = false;
+        ButtonTextYes.enabled = false;
+        ButtonTextNo.enabled = false;
 
         cSV.GetComponent<CSVReader>().Read();
         allMessage = cSV.GetComponent<CSVReader>().csvDatas;
         buttonScriptYes = ButtonYes.GetComponent<ButtonScript>();
         buttonScriptNo = ButtonNo.GetComponent<ButtonScript>();
-
     }
 
     public void Event1()
@@ -96,8 +118,6 @@ public class EventMessage : MonoBehaviour
         //kanbanが持ってるSihnBoardスクリプトの中のフラグ変数がtrueの時
         if (signBoard.KanbanHit == true && Input.GetKeyDown(KeyCode.Space))
         {
-            SwitchYes = buttonScriptYes.isButtonClickYes;
-            SwitchNo = buttonScriptNo.isButtonClickNo;
             canvas.enabled = true;
             clickIcon.SetActive(true);
             messageText.enabled = true;
@@ -118,10 +138,11 @@ public class EventMessage : MonoBehaviour
                 {
                     //2行目に来たら分岐のボタンを表示(caseの後ろの数字を変えると色んな行で分岐のボタンを表示できる)
                     case 1:
-                        Debug.Log("KUMAAAAAAAAAAAAAAAA");
                         clickIcon.SetActive(false);
                         ButtonYes.enabled = true;
                         ButtonNo.enabled = true;
+                        ButtonTextYes.enabled = true;
+                        ButtonTextNo.enabled = true;
 
                         ////それぞれのボタンを押したら(datas[数字])の数字と同じ行数に飛ぶ
                         //if (SwitchYes == true)
@@ -139,6 +160,8 @@ public class EventMessage : MonoBehaviour
                         clickIcon.SetActive(false);
                         ButtonYes.enabled = true;
                         ButtonNo.enabled = true;
+                        ButtonTextYes.enabled = true;
+                        ButtonTextNo.enabled = true;
 
                         ////それぞれのボタンを押したら(datas[数字])の数字と同じ行数に飛ぶ
                         //if (SwitchYes == true)
@@ -172,11 +195,11 @@ public class EventMessage : MonoBehaviour
 
                 //elapsedTime = 0f;
 
-                //メッセージが全部表示されていたらゲームオブジェクト自体の削除
-                if (messsageNum >= allMessage.Count)
-                {
-                    isEndMessage = true;
-                }
+                ////メッセージが全部表示されていたらゲームオブジェクト自体の削除
+                //if (messsageNum >= allMessage.Count)
+                //{
+                //    isEndMessage = true;
+                //}
             }
         }
         ////クリックアイコンの点滅処理
@@ -192,4 +215,5 @@ public class EventMessage : MonoBehaviour
         //    }
         //}
     }
+    
 }
