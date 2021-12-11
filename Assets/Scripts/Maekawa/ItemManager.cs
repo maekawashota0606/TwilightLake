@@ -7,77 +7,92 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
     [SerializeField]
     private Item _defaultItem = null;
     private const int _MAX_HOLD_NUM = 3;
-    private List<Item> _playersItems = new List<Item>();
+    [SerializeField]
+    private Item[] _inventory = new Item[_MAX_HOLD_NUM];
     //private Dictionary<Item.ItemType, int> _ItemsDict = new Dictionary<Item.ItemType, int>();
-    private int _currentIndex = 0;
+    private int _currentIndex = 0;// 仮
+
     private void Start()
     {
-
+        // 空を示すアイテムを入れる
+        for (int i = 0; i < _MAX_HOLD_NUM; i++)
+            _inventory[i] = _defaultItem;
     }
 
-    public bool GetItem(Item item)
+    public void GetItem(Item item)
     {
-        bool isGot = true;
-
-        bool isContain = false;
-        foreach(Item items in _playersItems)
+        // 同名アイテムをすでに持っているかチェック
+        for (int i = 0; i < _MAX_HOLD_NUM; i++)
         {
-            // すでに持っているアイテムなら追加
-            if (items != null && items.itemType == item.itemType)
+            // 空きは一旦スルー
+            if (_inventory[i].itemType == Item.ItemType.None)
             {
-                items.quantity += item.quantity;
-                isContain = true;
-                break;
+                continue;
+            }
+            // すでに持っているアイテムならストック
+            else if (_inventory[i].itemType == item.itemType)
+            {
+                AddItem(i, item.quantity);
+                return;
             }
         }
 
-        if(!isContain)
+        // 同名アイテムを持っていない場合
+        // インベントリに空きがあるかチェック
+        for (int i = 0; i < _MAX_HOLD_NUM; i++)
         {
-            // アイテム所持枠がマックスなら
-            if(_MAX_HOLD_NUM <= _playersItems.Count)
+            // 空なら入手
+            if (_inventory[i].itemType == Item.ItemType.None)
             {
-                RemoveItem(_currentIndex);
-                _playersItems.Insert(_currentIndex, item);
-            }
-            else
-            {
-                _playersItems.Add(item);
+                SetItem(i, item);
+                return;
             }
         }
+
+        // 空きもない場合
+        // 選択中のアイテムを捨てる
+        RemoveItem(_currentIndex);
+        SetItem(_currentIndex, item);
 
         // TODO:上限を設定する
         // 複数取得した場合に上限を超えるなら上限まで取得し、残りを場に置く
-
-        return isGot;
-    }
-
-    private void UpdateItem()
-    {
-
     }
 
     private void UseItem(int idx)
     {
-        if (idx < 0 || _playersItems.Count < idx)
-        {
-            Debug.LogError("指定されたインデックスは存在しません");
-            return;
-        }
+        //if (idx < 0 || _inventory.Count < idx)
+        //{
+        //    Debug.LogError("指定されたインデックスは存在しません");
+        //    return;
+        //}
 
-        if(0 < _playersItems[idx].quantity)
-        {
-            _playersItems[idx].quantity--;
-            _playersItems[idx].ItemEffect();
-        }
+        //if(0 < _inventory[idx].quantity)
+        //{
+        //    _inventory[idx].quantity--;
+        //    _inventory[idx].ItemEffect();
+        //}
 
-        if (_playersItems[idx].quantity < 1)
-            _playersItems.RemoveAt(idx);
+        //if (_inventory[idx].quantity < 1)
+        //    _inventory.RemoveAt(idx);
+    }
+
+    private void SetItem(int idx, Item item)
+    {
+        if (item.itemType == Item.ItemType.None)
+            Debug.LogError("無効なアイテムです");
+        else
+            _inventory[idx] = item;
+    }
+
+    private void AddItem(int idx, int quantity)
+    {
+        _inventory[idx].quantity += quantity;
     }
 
     private void RemoveItem(int idx)
     {
-        _playersItems.RemoveAt(idx);
-        // 変な位置に置かれるかも？
-        _playersItems[idx].gameObject.transform.position = Player.Instance.transform.position;
+        // 変な位置に置かれるので要修正
+        _inventory[idx].gameObject.transform.position = Player.Instance.transform.position + Vector3.down;
+        _inventory[idx] = _defaultItem;
     }
 }

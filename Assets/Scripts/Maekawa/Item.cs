@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class Item : MonoBehaviour, IInspectible
 {
-    [NonReorderable]
+    [SerializeField, Tooltip("å¬êî")]
     public int quantity = 1;
-    [SerializeField]
     public ItemType itemType = ItemType.None;
     public enum ItemType
     {
@@ -12,6 +11,7 @@ public class Item : MonoBehaviour, IInspectible
         Herb,
         Hoge,
         Foo,
+        Fuga,
         ItemCount
     }
 
@@ -22,7 +22,7 @@ public class Item : MonoBehaviour, IInspectible
 
     public void Inspected()
     {
-        if(ItemManager.Instance.GetItem(this))
-            transform.position = new Vector3(999, 999);
+        ItemManager.Instance.GetItem(this);
+        transform.position = new Vector3(999, 999);
     }
 }
