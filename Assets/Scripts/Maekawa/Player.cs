@@ -164,9 +164,18 @@ public class Player : SingletonMonoBehaviour<Player>
         // ‰ñ”ð
         if (Input.GetButtonDown("Avoid"))
             _isInputAvoid = true;
+
         // ’²‚×‚é
         if (Input.GetButtonDown("Up"))
             Inspect();
+
+        // ƒAƒCƒeƒ€
+        if (Input.GetButtonDown("Use"))
+            ItemManager.Instance.UseItem();
+        else if (Input.GetButtonDown("ItemChangeRight"))
+            ItemManager.Instance.ItemChangeRight();
+        else if (Input.GetButtonDown("ItemChangeLeft"))
+            ItemManager.Instance.ItemChangeLeft();
     }
 
     private void FixedUpdate()

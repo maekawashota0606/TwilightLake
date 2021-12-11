@@ -10,7 +10,8 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
     [SerializeField]
     private Item[] _inventory = new Item[_MAX_HOLD_NUM];
     //private Dictionary<Item.ItemType, int> _ItemsDict = new Dictionary<Item.ItemType, int>();
-    private int _currentIndex = 0;// 仮
+    // 選択中のアイテム
+    private int _currentIndex = 0;
 
     private void Start()
     {
@@ -53,27 +54,34 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
         // 選択中のアイテムを捨てる
         RemoveItem(_currentIndex);
         SetItem(_currentIndex, item);
-
-        // TODO:上限を設定する
-        // 複数取得した場合に上限を超えるなら上限まで取得し、残りを場に置く
     }
 
-    private void UseItem(int idx)
+    public void UseItem()
     {
-        //if (idx < 0 || _inventory.Count < idx)
-        //{
-        //    Debug.LogError("指定されたインデックスは存在しません");
-        //    return;
-        //}
+        if (_inventory[_currentIndex].itemType == Item.ItemType.None)
+            Debug.Log("アイテムがセットされていません");
+        else
+        {
+            _inventory[_currentIndex].ItemEffect();
+            _inventory[_currentIndex].quantity--;
 
-        //if(0 < _inventory[idx].quantity)
-        //{
-        //    _inventory[idx].quantity--;
-        //    _inventory[idx].ItemEffect();
-        //}
+            if (_inventory[_currentIndex].quantity < 1)
+                _inventory[_currentIndex] = _defaultItem;
+        }
+    }
 
-        //if (_inventory[idx].quantity < 1)
-        //    _inventory.RemoveAt(idx);
+    public void ItemChangeRight()
+    {
+        _currentIndex++;
+        _currentIndex %= _MAX_HOLD_NUM;
+        Debug.Log(_currentIndex);
+    }
+
+    public void ItemChangeLeft()
+    {
+        _currentIndex += _MAX_HOLD_NUM - 1;
+        _currentIndex %= _MAX_HOLD_NUM;
+        Debug.Log(_currentIndex);
     }
 
     private void SetItem(int idx, Item item)
