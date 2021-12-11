@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : SingletonMonoBehaviour<Player>
 {
     [SerializeField, Tooltip("HP"), Header("ForDesigner")]
-    private int _HP = 100;
+    private int _maxHP = 100;
     [SerializeField, Tooltip("重力の倍率")]
     private float _gravityRatio = 1;
     [SerializeField, Tooltip("移動速度")]
@@ -33,6 +33,7 @@ public class Player : SingletonMonoBehaviour<Player>
     [SerializeField, Tooltip("落下硬直時間")]
     private float _fallFreezeTime = 1f;
     [SerializeField, Header("ForEngineer")]
+    private int _HP = 100;
     private Vector3 _centerOffset = new Vector3(0, -0.5f);
     private Rigidbody _rb = null;
     private Animator _animator = null;
@@ -74,6 +75,7 @@ public class Player : SingletonMonoBehaviour<Player>
 
     void Start()
     {
+        _HP = _maxHP;
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -162,6 +164,9 @@ public class Player : SingletonMonoBehaviour<Player>
         // 回避
         if (Input.GetButtonDown("Avoid"))
             _isInputAvoid = true;
+        // 調べる
+        if (Input.GetButtonDown("Up"))
+            Inspect();
     }
 
     private void FixedUpdate()
@@ -229,6 +234,7 @@ public class Player : SingletonMonoBehaviour<Player>
     public void AddDamage(int damage)
     {
         _HP -= damage;
+        LimitHP();
     }
 
     public void AddDamage(int damage, Vector3 enemyPosition)
@@ -258,9 +264,29 @@ public class Player : SingletonMonoBehaviour<Player>
         _rb.velocity = Vector3.zero;
         _rb.AddForce(dir * _knockBackPower, ForceMode.VelocityChange);
 
-        // 死亡処理
-        if (_HP <= 0)
-            Debug.Log("GameOver");
+        LimitHP();
+    }
+
+    public void Heal(int healAmount)
+    {
+        _HP += healAmount;
+        LimitHP();
+        Debug.Log(_HP);
+    }
+
+    public void Heal(float healRatio)
+    {
+        _HP += (int)(_maxHP * healRatio);
+        LimitHP();
+        Debug.Log(_HP);
+    }
+
+    private void LimitHP()
+    {
+        if (_maxHP < _HP)
+            _HP = _maxHP;
+        else if (_HP < 0)
+            _HP = 0;
     }
 
     private void CountInvincibleTime()
@@ -407,8 +433,17 @@ public class Player : SingletonMonoBehaviour<Player>
         _actionState = state;
     }
 
-
-
+    private void Inspect()
+    {
+        RaycastHit hit;
+        IInspectible inspectible = null;
+        if (Physics.Raycast(transform.position, Vector3.down,out hit, 1f))
+            inspectible = hit.transform.gameObject.GetComponent<IInspectible>();
+        if (inspectible == null)
+            return;
+        // イベント実行
+        inspectible.Inspected();
+    }
     // forDebug BoxCast可視化用
     private void OnDrawGizmos()
     {
