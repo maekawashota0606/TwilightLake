@@ -98,7 +98,7 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
     private void RemoveItem(int idx)
     {
         // ïœÇ»à íuÇ…íuÇ©ÇÍÇÈÇÃÇ≈óvèCê≥
-        _inventory[idx].gameObject.transform.position = Player.Instance.transform.position + Vector3.down;
+        _inventory[idx].gameObject.transform.position = Player.Instance.transform.position + (Vector3.down * 0.75f);
         _inventory[idx] = _defaultItem;
     }
 }
