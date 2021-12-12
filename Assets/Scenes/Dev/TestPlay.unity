@@ -134,8 +134,16 @@ PrefabInstance:
       propertyPath: HurtTime
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1917787359602485687, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4721415924240064427, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
       propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4721415924240064431, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5370175800495382911, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
@@ -442,8 +450,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5a622c492a4b574fbc8b76dc5bd8495, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponObject: {fileID: 0}
-  _enemy: []
 --- !u!4 &1112808791
 Transform:
   m_ObjectHideFlags: 0

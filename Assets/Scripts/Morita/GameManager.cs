@@ -48,6 +48,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        int test1 = LayerMask.NameToLayer("Player");
+        int test2 = LayerMask.NameToLayer("Enemy");
+        Physics.IgnoreLayerCollision(test1, test2);
+
         C_position = StartPosition.position;
     }
 

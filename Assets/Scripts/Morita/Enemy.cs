@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour, IDamagable
+public class Enemy : MonoBehaviour
 {
     [SerializeField]
     private float hp;
@@ -10,7 +10,6 @@ public class Enemy : MonoBehaviour, IDamagable
 
     /// <summary>Š•Ší</summary>
     //public WeaponManager.WeaponType holdweapon = WeaponManager.WeaponType.Knife;
-
     public float HitPoint
     {
         get
@@ -33,10 +32,5 @@ public class Enemy : MonoBehaviour, IDamagable
     private void Awake()
     {
         enemyAI = transform.GetComponent<EnemyAI>();
-    }
-    public void AddDamage(int damage)
-    {
-        enemyAI.StartCoroutine("Hurt");
-        HitPoint -= damage;
     }
 }
