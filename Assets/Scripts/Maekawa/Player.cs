@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : SingletonMonoBehaviour<Player>
 {
     [SerializeField, Tooltip("HP"), Header("ForDesigner")]
-    private int _HP = 100;
+    private int _maxHP = 100;
     [SerializeField, Tooltip("重力の倍率")]
     private float _gravityRatio = 1;
     [SerializeField, Tooltip("移動速度")]
@@ -33,11 +33,13 @@ public class Player : SingletonMonoBehaviour<Player>
     [SerializeField, Tooltip("落下硬直時間")]
     private float _fallFreezeTime = 1f;
     [SerializeField, Header("ForEngineer")]
+    private int _HP = 100;
+    [SerializeField]
+    private ActionState _actionState = ActionState.Idle;
     private Vector3 _centerOffset = new Vector3(0, -0.5f);
     private Rigidbody _rb = null;
     private Animator _animator = null;
     private SpriteRenderer _spriteRenderer = null;
-    private BoxCollider _boxCollider = null;
     private bool _isInputRight = false;
     private bool _isInputLeft = false;
     private bool _isInputDowm = false;
@@ -59,26 +61,24 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _lastPosY = 0;
     private float _currentFallDistance = 0;
     private float _currentInvincibleTime = 0;
-    private Vector3 _defaultColliderSize = Vector3.zero;
-    private Vector3 _colliderOffset = new Vector3(0, -0.1f);
-    private ActionState _actionState = ActionState.Idle;
     private enum ActionState
     {
         Idle,
-        Jump,
+        Move,
         Attack,
+        Jump,
+        Fall,
         Avoid,
+        Squat,
         Damaged
     }
 
-
     void Start()
     {
+        _HP = _maxHP;
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _boxCollider = GetComponent<BoxCollider>();
-        _defaultColliderSize = _boxCollider.size;
     }
 
     private void Update()
@@ -118,23 +118,13 @@ public class Player : SingletonMonoBehaviour<Player>
 
         // しゃがみ
         if (Input.GetButtonDown("Down") && _isLanding)
-        {
             _animator.SetTrigger("Squat");
-            _boxCollider.size = new Vector3(_defaultColliderSize.x, _defaultColliderSize.y / 2);
-            _boxCollider.center = new Vector3(0, -0.65f, 0);
-        }
 
         // しゃがみ中
         if (Input.GetButton("Down") && _isLanding)
-        {
             _animator.SetBool("IsSquating", true);
-        }
         else
-        {
-            _boxCollider.size = _defaultColliderSize;
-            _boxCollider.center = _colliderOffset;
             _animator.SetBool("IsSquating", false);
-        }
 
         // 同時入力を無視
         if (!Input.GetButton("Left") || !Input.GetButton("Right"))
@@ -162,6 +152,18 @@ public class Player : SingletonMonoBehaviour<Player>
         // 回避
         if (Input.GetButtonDown("Avoid"))
             _isInputAvoid = true;
+
+        // 調べる
+        if (Input.GetButtonDown("Up"))
+            Inspect();
+
+        // アイテム
+        if (Input.GetButtonDown("Use"))
+            ItemManager.Instance.UseItem();
+        else if (Input.GetButtonDown("ItemChangeRight"))
+            ItemManager.Instance.ItemChangeRight();
+        else if (Input.GetButtonDown("ItemChangeLeft"))
+            ItemManager.Instance.ItemChangeLeft();
     }
 
     private void FixedUpdate()
@@ -170,51 +172,54 @@ public class Player : SingletonMonoBehaviour<Player>
         _animator.SetBool("IsLanding", _isLanding);
 
         // 落下検知
-        if (_rb.velocity.y < 0 && !_isLanding)
-            _animator.SetBool("IsFalling", true);
-        else
-            _animator.SetBool("IsFalling", false);
+        _animator.SetBool("IsFalling", _rb.velocity.y < 0 && !_isLanding);
 
-        AddGravity();
+        // 入力反映
+        if (_isInputAttack)
+            _animator.SetInteger("Attack", 1);
+        if (_isInputAvoid)
+            _animator.SetTrigger("Avoid");
+        
 
-        switch(_actionState)
+        switch (_actionState)
         {
-            case ActionState.Jump:
-                _isUseGravity = false;
-                // ジャンプの終わりを検知(天井などに当たった場合着地できなくなるので要修正)
-                if (_maxHeightJump < transform.position.y - _startJumpPositionY)
-                    EndJump();
-
-                if (_isInputAttack)
-                    Attack();
-                else if (_isInputAvoid)
-                    Avoid();
-                else
-                    Move();
+            case ActionState.Idle:
+                Move();
+                if (InputJump())
+                    _animator.SetTrigger("Jump");
+                break;
+            case ActionState.Move:
+                Move();
+                if (InputJump())
+                    _animator.SetTrigger("Jump");
                 break;
             case ActionState.Attack:
-                _isUseGravity = true;
-                break;
-            case ActionState.Avoid:
-                _isUseGravity = false;
                 //
                 break;
+            case ActionState.Jump:
+                Move();
+                // ジャンプの終わりを検知
+                _animator.SetBool("IsFalling", _maxHeightJump < transform.position.y - _startJumpPositionY);
+                break;
+            case ActionState.Fall:
+                Move();
+                break;
+            case ActionState.Avoid:
+                //
+                break;
+            case ActionState.Squat:
+                Move();
+                if (InputJump())
+                    _animator.SetTrigger("Jump");
+                break;
             case ActionState.Damaged:
-                _isUseGravity = true;
+                //
                 break;
             default:
-                _isUseGravity = true;
-
-                if (_isInputAttack)
-                    Attack();
-                else if (InputJump())
-                    Jump();
-                else if (_isInputAvoid)
-                    Avoid();
-                else
-                    Move();
                 break;
         }
+
+        AddGravity();
 
         // 入力変数初期化
         _isInputRight = false;
@@ -226,41 +231,26 @@ public class Player : SingletonMonoBehaviour<Player>
         _isInputAvoid = false;
     }
 
-    public void AddDamage(int damage)
+    public void Heal(int healAmount)
     {
-        _HP -= damage;
+        _HP += healAmount;
+        LimitHP();
+        Debug.Log(_HP);
     }
 
-    public void AddDamage(int damage, Vector3 enemyPosition)
+    public void Heal(float healRatio)
     {
-        // 無敵なら処理しない
-        if (_isInvincible || _isAvoidInvincible)
-            return;
+        _HP += (int)(_maxHP * healRatio);
+        LimitHP();
+        Debug.Log(_HP);
+    }
 
-        // ダメージを受ける
-        _HP -= damage;
-        // 一定時間無敵になる
-        _isInvincible = true;
-        _actionState = ActionState.Damaged;
-        _animator.SetTrigger("Damage");
-
-        // 攻撃側との距離を計算
-        //Vector3 dir = (transform.position - enemyPosition).normalized;
-        Vector3 dir = transform.position - enemyPosition;
-
-        // 左右にノックバック(敵と反対方向)
-        if (dir.x > 0)
-            dir = Vector3.right;
-        else
-            dir = Vector3.left;
-
-        // 上下に吹き飛んだほうが見栄えがいいかも？
-        _rb.velocity = Vector3.zero;
-        _rb.AddForce(dir * _knockBackPower, ForceMode.VelocityChange);
-
-        // 死亡処理
-        if (_HP <= 0)
-            Debug.Log("GameOver");
+    private void LimitHP()
+    {
+        if (_maxHP < _HP)
+            _HP = _maxHP;
+        else if (_HP < 0)
+            _HP = 0;
     }
 
     private void CountInvincibleTime()
@@ -297,6 +287,12 @@ public class Player : SingletonMonoBehaviour<Player>
         return Physics.BoxCast(origin, boxSize / 2, Vector3.down, Quaternion.identity, distance, layerMask);
     }
 
+    private void Idle()
+    {
+        _actionState = ActionState.Idle;
+        _isUseGravity = true;
+    }
+
     private void Move()
     {
         if (_isInputRight)
@@ -306,7 +302,25 @@ public class Player : SingletonMonoBehaviour<Player>
         else
             _rb.velocity = new Vector3(0, _rb.velocity.y);
 
+        _animator.SetFloat("Speed", Mathf.Abs(_rb.velocity.x));
         transform.localScale = new Vector3(_direction, 1, 1);
+    }
+
+    private void Moving()
+    {
+        _actionState = ActionState.Move;
+        _isUseGravity = true;
+    }
+
+    private void Attack()
+    {
+        _actionState = ActionState.Attack;
+        _rb.velocity = Vector3.zero;
+    }
+
+    private void EndAttack()
+    {
+        _animator.SetInteger("Attack", 0);
     }
 
     private bool InputJump()
@@ -343,46 +357,29 @@ public class Player : SingletonMonoBehaviour<Player>
     private void Jump()
     {
         _actionState = ActionState.Jump;
+        _isUseGravity = false;
         _currentJumpInputTime = 0;
-        _animator.SetTrigger("Jump");
         _startJumpPositionY = transform.position.y;
-        //_isUseGravity = false;
         _rb.AddForce(_jumpPower * Vector3.up, ForceMode.VelocityChange);
     }
 
-    private void EndJump()
+    private void Fall()
     {
-        _actionState = ActionState.Idle;
-        //_isUseGravity = true;
+        _actionState = ActionState.Fall;
+        _isUseGravity = true;
         _rb.velocity = new Vector3(_rb.velocity.x, 0);
-    }
-
-    private void Attack()
-    {
-        _actionState = ActionState.Attack;
-        _rb.velocity = Vector3.zero;
-        _animator.SetInteger("Attack", 1);
-    }
-
-    private void EndAttack()
-    {
-        //_isUseGravity = true;
-        _actionState = ActionState.Idle;
-        _animator.SetInteger("Attack", 0);
     }
 
     private void Avoid()
     {
-        _animator.SetTrigger("Avoid");
         _actionState = ActionState.Avoid;
-        //_isUseGravity = false;
+        _isUseGravity = false;
         _rb.velocity = Vector3.zero;
         _rb.AddForce(Vector3.right * _avoidPower * _direction, ForceMode.VelocityChange);
     }
 
     private void EndAvoid()
     {
-        //_isUseGravity = true;
         _rb.velocity = Vector3.zero;
     }
 
@@ -396,18 +393,65 @@ public class Player : SingletonMonoBehaviour<Player>
         _isAvoidInvincible = false;
     }
 
+    private void Squat()
+    {
+        _actionState = ActionState.Squat;
+    }
+
+    public void AddDamage(int damage)
+    {
+        _HP -= damage;
+        LimitHP();
+    }
+
+    public void AddDamage(int damage, Vector3 enemyPosition)
+    {
+        // 無敵なら処理しない
+        if (_isInvincible || _isAvoidInvincible)
+            return;
+
+        // ダメージを受ける
+        _HP -= damage;
+        // 一定時間無敵になる
+        _isInvincible = true;
+        _actionState = ActionState.Damaged;
+        _isUseGravity = true;
+        _animator.SetTrigger("Damage");
+
+        // 攻撃側との距離を計算
+        //Vector3 dir = (transform.position - enemyPosition).normalized;
+        Vector3 dir = transform.position - enemyPosition;
+
+        // 左右にノックバック(敵と反対方向)
+        if (dir.x > 0)
+            dir = Vector3.right;
+        else
+            dir = Vector3.left;
+
+        // 上下に吹き飛んだほうが見栄えがいいかも？
+        _isUseGravity = true;
+        _rb.velocity = Vector3.zero;
+        _rb.AddForce(dir * _knockBackPower, ForceMode.VelocityChange);
+
+        LimitHP();
+    }
+
     private void EndDamaged()
     {
-        _actionState = ActionState.Idle;
         _rb.velocity = new Vector3(0, _rb.velocity.y);
     }
 
-    private void ChangeState(ActionState state)
+    private void Inspect()
     {
-        _actionState = state;
+        RaycastHit hit;
+        IInspectible inspectible = null;
+        if (Physics.Raycast(transform.position, Vector3.down,out hit, 1f))
+            inspectible = hit.transform.gameObject.GetComponent<IInspectible>();
+        if (inspectible == null)
+            return;
+        // イベント実行
+        inspectible.Inspected();
     }
-
-
 
     // forDebug BoxCast可視化用
     private void OnDrawGizmos()

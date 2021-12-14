@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TakeDamage : MonoBehaviour, IDamagable
+public class TakeDamage : MonoBehaviour, IDamageble
 {
     private EnemyAI enemyAI;
     private Enemy enemy;

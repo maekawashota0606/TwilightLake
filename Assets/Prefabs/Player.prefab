@@ -1,5 +1,53 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1196328882
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1196328883}
+  - component: {fileID: 1196328884}
+  m_Layer: 6
+  m_Name: ItemManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1196328883
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196328882}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2423938246774166688}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1196328884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196328882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f182aad3d4fdb4eae950bc38967480, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defaultItem: {fileID: 5967334858911337427, guid: 44a581aa59ce5f940a4545ff1b3a8ebf, type: 3}
+  _inventory:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &1402081094
 GameObject:
   m_ObjectHideFlags: 0
@@ -173,6 +221,7 @@ Transform:
   m_Children:
   - {fileID: 2423938247861906778}
   - {fileID: 1805296898}
+  - {fileID: 1196328883}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -223,17 +272,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d97307171174a8f44b1fa058c52f28ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _HP: 100
+  _maxHP: 100
   _gravityRatio: 3.5
   _velocityX: 7.5
-  _jumpPower: 17.5
-  _maxHeightJump: 3
+  _jumpPower: 20
+  _maxHeightMaxJump: 3
+  _maxHeightMiniJump: 1.5
+  _maxTimeReceptionJump: 0.15
   _avoidPower: 15
   _invincibleTime: 1.5
   _knockBackPower: 10
-  _freezeFallDisitance: 3
+  _freezeFallDisitance: 5
   _fallFreezeTime: 1
-  _centerOffset: {x: 0, y: -0.5, z: 0}
+  _HP: 100
+  _actionState: 0
 --- !u!65 &877129335
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -241,7 +293,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2423938246774166702}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 9f2d6d8b7327d3d4bbc5537a7837bd8d, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
