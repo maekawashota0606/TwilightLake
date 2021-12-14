@@ -72,14 +72,14 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
     {
         _currentIndex++;
         _currentIndex %= _MAX_HOLD_NUM;
-        Debug.Log(_currentIndex);
+        Debug.Log($"セットされているアイテム:{_inventory[_currentIndex].itemType}");
     }
 
     public void ItemChangeLeft()
     {
         _currentIndex += _MAX_HOLD_NUM - 1;
         _currentIndex %= _MAX_HOLD_NUM;
-        Debug.Log(_currentIndex);
+        Debug.Log($"セットされているアイテム:{_inventory[_currentIndex].itemType}");
     }
 
     private void SetItem(int idx, Item item)
@@ -87,17 +87,22 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
         if (item.itemType == Item.ItemType.None)
             Debug.LogError("無効なアイテムです");
         else
+        {
             _inventory[idx] = item;
+            Debug.Log($"{_inventory[idx].itemType}を`{_inventory[idx].quantity}個入手した");
+        }
     }
 
     private void AddItem(int idx, int quantity)
     {
         _inventory[idx].quantity += quantity;
+        Debug.Log($"{_inventory[idx].itemType}を`{quantity}個入手した");
     }
 
     private void RemoveItem(int idx)
     {
-        // 変な位置に置かれるので要修正
+        // TODO:変な位置に置かれるので要修正
+        Debug.Log($"{_inventory[idx].itemType}{_inventory[idx].quantity}個を捨てた");
         _inventory[idx].gameObject.transform.position = Player.Instance.transform.position + (Vector3.down * 0.75f);
         _inventory[idx] = _defaultItem;
     }
