@@ -40,9 +40,10 @@ public class Player : SingletonMonoBehaviour<Player>
     private Rigidbody _rb = null;
     private Animator _animator = null;
     private SpriteRenderer _spriteRenderer = null;
-    private bool _isInputRight = false;
-    private bool _isInputLeft = false;
-    private bool _isInputDowm = false;
+    private float _horizontal = 0;
+    private float _lastHorizontal = 0;
+    private float _vertical = 0;
+    private float _lastVertical = 0;
     private bool _isInputJump = false;
     private bool _isLastInputJump = false;
     private bool _isInputAttack = false;
@@ -116,30 +117,10 @@ public class Player : SingletonMonoBehaviour<Player>
         _lastPosY = transform.position.y;
 
 
-        // しゃがみ
-        if (Input.GetButtonDown("Down") && _isLanding)
-            _animator.SetTrigger("Squat");
-
-        // しゃがみ中
-        if (Input.GetButton("Down") && _isLanding)
-            _animator.SetBool("IsSquating", true);
-        else
-            _animator.SetBool("IsSquating", false);
-
-        // 同時入力を無視
-        if (!Input.GetButton("Left") || !Input.GetButton("Right"))
-        {
-            if (Input.GetButton("Left"))
-            {
-                _isInputLeft = true;
-                _direction = -1;
-            }
-            else if (Input.GetButton("Right"))
-            {
-                _isInputRight = true;
-                _direction = 1;
-            }
-        }
+        // x軸
+        _horizontal = Input.GetAxis("Horizontal");
+        // y軸
+        _vertical = Input.GetAxis("Vertical");
 
         // ジャンプ
         if (Input.GetButton("Jump"))
@@ -153,9 +134,19 @@ public class Player : SingletonMonoBehaviour<Player>
         if (Input.GetButtonDown("Avoid"))
             _isInputAvoid = true;
 
+
         // 調べる
-        if (Input.GetButtonDown("Up"))
+        if (-1 < _lastVertical && _vertical < 0)
             Inspect();
+        // しゃがみ
+        if (_lastVertical < 1 && 0 < Input.GetAxis("Vertical") && _isLanding)
+            _animator.SetTrigger("Squat");
+
+        // しゃがみ中
+        if (0 < _vertical && _isLanding)
+            _animator.SetBool("IsSquating", true);
+        else
+            _animator.SetBool("IsSquating", false);
 
         // アイテム
         if (Input.GetButtonDown("Use"))
@@ -164,6 +155,9 @@ public class Player : SingletonMonoBehaviour<Player>
             ItemManager.Instance.ItemChangeRight();
         else if (Input.GetButtonDown("ItemChangeLeft"))
             ItemManager.Instance.ItemChangeLeft();
+
+        _lastHorizontal = _horizontal;
+        _lastVertical = _vertical;
     }
 
     private void FixedUpdate()
@@ -222,9 +216,6 @@ public class Player : SingletonMonoBehaviour<Player>
         AddGravity();
 
         // 入力変数初期化
-        _isInputRight = false;
-        _isInputLeft = false;
-        _isInputDowm = false;
         _isLastInputJump = _isInputJump;
         _isInputJump = false;
         _isInputAttack = false;
@@ -295,15 +286,12 @@ public class Player : SingletonMonoBehaviour<Player>
 
     private void Move()
     {
-        if (_isInputRight)
-            _rb.velocity = new Vector3(_velocityX, _rb.velocity.y);
-        else if (_isInputLeft)
-            _rb.velocity = new Vector3(_velocityX * -1, _rb.velocity.y);
-        else
-            _rb.velocity = new Vector3(0, _rb.velocity.y);
+        _rb.velocity = new Vector3(_velocityX * _horizontal, _rb.velocity.y);
+
+        if (_horizontal != 0)
+            transform.localScale = new Vector3(_direction, 1, 1);
 
         _animator.SetFloat("Speed", Mathf.Abs(_rb.velocity.x));
-        transform.localScale = new Vector3(_direction, 1, 1);
     }
 
     private void Moving()
@@ -315,6 +303,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private void Attack()
     {
         _actionState = ActionState.Attack;
+        _isUseGravity = true;
         _rb.velocity = Vector3.zero;
     }
 
