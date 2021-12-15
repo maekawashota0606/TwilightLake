@@ -74,7 +74,7 @@ public class Player : SingletonMonoBehaviour<Player>
         Damaged
     }
 
-    void Start()
+    private void Start()
     {
         _HP = _maxHP;
         _rb = GetComponent<Rigidbody>();
@@ -226,6 +226,7 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         _HP += healAmount;
         LimitHP();
+        HUDManager.Instance.DrawHPGauge(_HP, _maxHP);
         Debug.Log(_HP);
     }
 
@@ -233,6 +234,7 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         _HP += (int)(_maxHP * healRatio);
         LimitHP();
+        HUDManager.Instance.DrawHPGauge(_HP, _maxHP);
         Debug.Log(_HP);
     }
 
@@ -391,6 +393,7 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         _HP -= damage;
         LimitHP();
+        HUDManager.Instance.DrawHPGauge(_HP, _maxHP);
     }
 
     public void AddDamage(int damage, Vector3 enemyPosition)
@@ -423,6 +426,7 @@ public class Player : SingletonMonoBehaviour<Player>
         _rb.AddForce(dir * _knockBackPower, ForceMode.VelocityChange);
 
         LimitHP();
+        HUDManager.Instance.DrawHPGauge(_HP, _maxHP);
     }
 
     private void EndDamaged()
