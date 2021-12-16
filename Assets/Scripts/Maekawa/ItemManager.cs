@@ -76,6 +76,7 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
         _currentIndex++;
         _currentIndex %= _SLOT_SIZE;
         HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
+        Debug.Log(_currentIndex);
         Debug.Log($"セットされているアイテム:{_itemSlots[_currentIndex].itemType}");
     }
 
@@ -84,6 +85,7 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
         _currentIndex += _SLOT_SIZE - 1;
         _currentIndex %= _SLOT_SIZE;
         HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
+        Debug.Log(_currentIndex);
         Debug.Log($"セットされているアイテム:{_itemSlots[_currentIndex].itemType}");
     }
 

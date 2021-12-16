@@ -1399,8 +1399,8 @@ MonoBehaviour:
   _HPGauge: {fileID: 1999815146}
   _itemSlots:
   - {fileID: 1350715312}
-  - {fileID: 1733407046}
   - {fileID: 880046638}
+  - {fileID: 1733407046}
 --- !u!1 &2110084733
 GameObject:
   m_ObjectHideFlags: 0
