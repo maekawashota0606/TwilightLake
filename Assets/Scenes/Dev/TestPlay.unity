@@ -136,7 +136,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6160094661752735254, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6160094661752735255, guid: 19f8d2ab730b2eb4487ba6233e5ebfe7, type: 3}
       propertyPath: m_RootOrder
@@ -742,6 +742,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 877129339, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
+      propertyPath: _maxTimeReceptionJump
+      value: 0.12
+      objectReference: {fileID: 0}
     - target: {fileID: 2423938246774166688, guid: aaad6adf7e9821547be9b8905b44ae4a, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -1399,8 +1403,8 @@ MonoBehaviour:
   _HPGauge: {fileID: 1999815146}
   _itemSlots:
   - {fileID: 1350715312}
-  - {fileID: 880046638}
   - {fileID: 1733407046}
+  - {fileID: 880046638}
 --- !u!1 &2110084733
 GameObject:
   m_ObjectHideFlags: 0

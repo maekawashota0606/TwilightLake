@@ -36,7 +36,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private int _HP = 100;
     [SerializeField]
     private ActionState _actionState = ActionState.Idle;
-    private Vector3 _centerOffset = new Vector3(0, -0.5f);
+    private Vector3 _centerOffset = new Vector3(0, -0.6f);
     private Rigidbody _rb = null;
     private Animator _animator = null;
     private SpriteRenderer _spriteRenderer = null;
@@ -46,6 +46,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _lastVertical = 0;
     private bool _isInputJump = false;
     private bool _isLastInputJump = false;
+    private bool _isInputDownJump = true;
     private bool _isInputAttack = false;
     private bool _isInputAvoid = false;
     private int _direction = 1;
@@ -124,7 +125,10 @@ public class Player : SingletonMonoBehaviour<Player>
         _vertical = Input.GetAxis("Vertical");
 
         // ÉWÉÉÉìÉv
-        if (Input.GetButton("Jump"))
+        if (Input.GetButtonUp("Jump"))
+            _isInputDownJump = true;
+
+        if (Input.GetButton("Jump") && _isInputDownJump)
             _isInputJump = true;
 
         // çUåÇ
@@ -292,7 +296,10 @@ public class Player : SingletonMonoBehaviour<Player>
         _rb.velocity = new Vector3(_velocityX * _horizontal, _rb.velocity.y);
 
         if (_horizontal != 0)
+        {
+            _direction = (int)Mathf.Sign(_horizontal);
             transform.localScale = new Vector3(_direction, 1, 1);
+        }
 
         _animator.SetFloat("Speed", Mathf.Abs(_rb.velocity.x));
     }
@@ -319,13 +326,6 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         bool isJump = false;
 
-        // âüÇµÇ¡ÇœÇ»Çµñhé~
-        if (!_isLanding)
-        {
-            _currentJumpInputTime = 0;
-            return false;
-        }
-
         if (_isInputJump)
         {
             _currentJumpInputTime += Time.deltaTime;
@@ -336,8 +336,11 @@ public class Player : SingletonMonoBehaviour<Player>
                 isJump = true;
             }
         }
+        else
+            _currentJumpInputTime = 0;
+
         // è¨ÉWÉÉÉìÉv
-        else if (_isLastInputJump && !_isInputJump)
+        if (_isLastInputJump && !_isInputJump)
         {
             _maxHeightJump = _maxHeightMiniJump;
             isJump = true;
@@ -350,6 +353,7 @@ public class Player : SingletonMonoBehaviour<Player>
     {
         _actionState = ActionState.Jump;
         _isUseGravity = false;
+        _isInputDownJump = false;
         _currentJumpInputTime = 0;
         _startJumpPositionY = transform.position.y;
         _rb.AddForce(_jumpPower * Vector3.up, ForceMode.VelocityChange);
