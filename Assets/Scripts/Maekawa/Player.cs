@@ -80,7 +80,6 @@ public class Player : SingletonMonoBehaviour<Player>
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        HUDManager.Instance.DrawHPGauge(_HP, _maxHP);
     }
 
     private void Update()

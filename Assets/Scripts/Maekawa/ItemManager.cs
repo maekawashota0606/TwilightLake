@@ -16,8 +16,6 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
         // 空を示すアイテムを入れる
         for (int i = 0; i < _SLOT_SIZE; i++)
             _itemSlots[i] = _defaultItem;
-
-        HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
     }
 
     public void GetItem(Item item)
@@ -68,14 +66,12 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
             if (_itemSlots[_currentIndex].quantity < 1)
                 _itemSlots[_currentIndex] = _defaultItem;
         }
-        HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
     }
 
     public void ItemChangeRight()
     {
         _currentIndex++;
         _currentIndex %= _SLOT_SIZE;
-        HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
         Debug.Log($"セットされているアイテム:{_itemSlots[_currentIndex].itemType}");
     }
 
@@ -83,7 +79,6 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
     {
         _currentIndex += _SLOT_SIZE - 1;
         _currentIndex %= _SLOT_SIZE;
-        HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
         Debug.Log($"セットされているアイテム:{_itemSlots[_currentIndex].itemType}");
     }
 
@@ -94,7 +89,6 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
         else
         {
             _itemSlots[idx] = item;
-            HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
             Debug.Log($"{_itemSlots[idx].itemType}を`{_itemSlots[idx].quantity}個入手した");
         }
     }
@@ -102,7 +96,6 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
     private void AddItem(int idx, int quantity)
     {
         _itemSlots[idx].quantity += quantity;
-        HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
         Debug.Log($"{_itemSlots[idx].itemType}を`{quantity}個入手した");
     }
 
