@@ -6,17 +6,19 @@ public class CameraManager : MonoBehaviour
 {
     Vector3 cameraPos;
     Vector3 playerPos;
+    private GameObject player;
 
     void Start()
     {
         cameraPos = transform.position;
+        player = GameObject.FindGameObjectWithTag("Player");
     }
 
     void Update()
     {
         cameraPos = transform.position;
-        playerPos = GameObject.Find("Player").transform.position;
-        if(playerPos.x > 0)
+        playerPos = player.transform.position;
+        if(playerPos.x > -4.5)
         {
             cameraPos.x = playerPos.x;
             transform.position = cameraPos;
