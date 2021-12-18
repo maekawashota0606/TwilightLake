@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonScript : MonoBehaviour
+public class ButtonScript :MonoBehaviour
 {
     //選択されたボタンの色を変える
     
@@ -17,8 +17,8 @@ public class ButtonScript : MonoBehaviour
     //ボタンの色を変えるやつ
     private Image ButtonImage;
 
-    //最終的にどの色になったかの判定
-    private bool Decide = true;
+    ////最終的にどの色になったかの判定
+    //private bool Decide = true;
 
     private void Start()
     {

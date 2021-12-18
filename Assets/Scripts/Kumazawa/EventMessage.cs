@@ -13,7 +13,7 @@ public class EventMessage : MonoBehaviour
     public Timer timer;
     [Header("〇ボタンで調べるのUIの取得")]
     public SearchText searchText;
-    [Header("CSVの取得")]
+    [Header("CSVの取得")]//複数のCSVを読み込みたいならcSVの名前を変えて増やす
     public CSVReader cSV;
 
     [Header("スクリプト{Yesボタン}")]
@@ -215,5 +215,4 @@ public class EventMessage : MonoBehaviour
         //    }
         //}
     }
-    
 }
