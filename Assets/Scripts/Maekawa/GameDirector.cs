@@ -5,13 +5,5 @@ using UnityEngine;
 public class GameDirector : SingletonMonoBehaviour<GameDirector>
 {
 
-    private void Start()
-    {
 
-    }
-
-    private void Update()
-    {
-
-    }
 }

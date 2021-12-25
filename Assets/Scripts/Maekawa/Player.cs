@@ -63,6 +63,7 @@ public class Player : SingletonMonoBehaviour<Player>
     private float _lastPosY = 0;
     private float _currentFallDistance = 0;
     private float _currentInvincibleTime = 0;
+
     private enum ActionState
     {
         Idle,
