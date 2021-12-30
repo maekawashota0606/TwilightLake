@@ -1,4 +1,4 @@
-﻿#Index,State,Num,Message,IsBranch,TrueWord,FalseWord,IfChooseTrue,IfChooseFalse,SkipIndex,ChangeState,IsEnd
+﻿#Index,State,Row,Message,IsBranch,TrueWord,FalseWord,IfChooseTrue,IfChooseFalse,SkipIndex,ChangeState,IsEnd
 0,0,0,鎧を着た男が座っているようだ。,0,,,,,,1,1
 0,1,0,そこに誰かいるのか？,0,,,,,,,0
 0,1,1,見ての通り、そこらの魔物に襲われてな…,0,,,,,,,0

@@ -6,12 +6,6 @@ using UnityEngine.UI;
 
 public class EventController : SingletonMonoBehaviour<EventController>
 {
-    [SerializeField]
-    private Canvas _ScenarioCanvas = null;
-    [SerializeField]
-    private Text _mainText = null;
-    [SerializeField]
-    private GameObject _BranchArea = null;
     private List<List<string[]>> _datasAtIndex = new List<List<string[]>>(100);
     private const string _FILE_PATH = "Scenario/Event_";
     private bool _isActive = false;
@@ -34,8 +28,7 @@ public class EventController : SingletonMonoBehaviour<EventController>
 
     private void Start()
     {
-        _ScenarioCanvas.gameObject.SetActive(false);
-        _BranchArea.gameObject.SetActive(false);
+
     }
 
     private void LoadScenario(int id, int index)
@@ -70,84 +63,72 @@ public class EventController : SingletonMonoBehaviour<EventController>
 
     public IEnumerator DisplayScenario(NPC npc)
     {
+        // 多重呼び出しを防ぐ
         if (_isActive)
             yield break;
         _isActive = true;
 
-        _ScenarioCanvas.gameObject.SetActive(true);
+        // csv読み込み
         LoadScenario(npc.eventID, npc.eventIndex);
+        // UI準備
+        TextController.Instance.ActivateCanvas();
 
-        Debug.Log("start");
+        // テキスト表示開始
         int row = 0;
         bool isEnd = false;
         while (!isEnd)
         {
             // テキスト表示
-            Debug.Log(_datasAtIndex[npc.eventState][row][(int)FieldName.Message]);
+            TextController.Instance.mainText.text = _datasAtIndex[npc.eventState][row][(int)FieldName.Message];
 
-            // Y/N選択
-            bool answer = false;
-            if (_datasAtIndex[npc.eventState][row][(int)FieldName.Isbranch] != "0")
-            {
-                // 選択肢
-                Debug.Log($"Y = { _datasAtIndex[npc.eventState][row][(int)FieldName.TrueWord] } / N = {_datasAtIndex[npc.eventState][row][(int)FieldName.FalseWord]}");
-
-
-                bool isConfirm = false;
-                do
-                {
-                    yield return null;
-
-                    Debug.Log("enter");
-                    if (Input.GetButtonDown("Jump"))
-                    {
-                        isConfirm = true;
-                        answer = true;
-                    }
-                    else if(Input.GetButtonDown("Avoid"))
-                    {
-                        isConfirm = true;
-                    }
-                }
-                while (isConfirm);
-            }
+            // 選択肢があるなら
+            bool isBranch = _datasAtIndex[npc.eventState][row][(int)FieldName.Isbranch] != "0";
+            if (isBranch)
+                TextController.Instance.ActivateChoice(_datasAtIndex[npc.eventState][row][(int)FieldName.TrueWord],
+                                                        _datasAtIndex[npc.eventState][row][(int)FieldName.FalseWord]);
             else
+                TextController.Instance.DeactivateChoice();
+
+            bool answer = false;
+            // テキスト送りの入力受付
+            do
             {
-                // テキスト送りの入力受付
-                do
-                {
-                    yield return null;
-                }
-                while (!Input.GetButtonDown("Jump"));
+                yield return null;
+                // Y/N選択
+                if (isBranch)
+                    answer = TextController.Instance.Choose();
             }
+            // プレイヤーがメッセージを送るのを待つ
+            while (!TextController.Instance.InputReception());
+
+            // 指定がなければ1行進める
+            int nexteRow = row + 1;
 
             // 終了判定
             if (_datasAtIndex[npc.eventState][row][(int)FieldName.IsEnd] != "0")
                 isEnd = true;
+            // 選択肢によって分岐
+            else if (isBranch)
+            {
+                Debug.Log(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseTrue] + _datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseFalse]);
+                if (answer)
+                    nexteRow = int.Parse(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseTrue]);
+                else
+                    nexteRow = int.Parse(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseFalse]);         
+            }
 
             // イベント進行
-            int state = 0;
-            if (int.TryParse(_datasAtIndex[npc.eventState][row][(int)FieldName.ChangeState], out state))
+            if (int.TryParse(_datasAtIndex[npc.eventState][row][(int)FieldName.ChangeState], out int state))
             {
-                row = 0;
+                nexteRow = 0;
                 npc.eventState = state;
             }
 
-            //
-            if (_datasAtIndex[npc.eventState][row][(int)FieldName.Isbranch] != "0")
-            {
-                if (answer)
-                    row = int.Parse(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseTrue]);
-                else
-                    row = int.Parse(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseFalse]);
-            }
-            else
-                row++;
+            // 指定した行に進む
+            row = nexteRow;
         }
 
-        _ScenarioCanvas.gameObject.SetActive(false);
-        _BranchArea.gameObject.SetActive(false);
+        TextController.Instance.DeactivateCanvas();
         _isActive = false;
-        Debug.Log("end");
     }
 }
