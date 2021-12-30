@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EventController : SingletonMonoBehaviour<EventController>
 {
     private List<List<string[]>> _datasAtIndex = new List<List<string[]>>(100);
-    private const string _FILE_PATH = "Scenario/Event_";
+    private const string _FILE_PATH_HEAD = "Scenario/Event_";
     private bool _isActive = false;
 
     private enum FieldName : byte
@@ -34,7 +33,7 @@ public class EventController : SingletonMonoBehaviour<EventController>
     private void LoadScenario(int id, int index)
     {
         _datasAtIndex.Clear();
-        string path = _FILE_PATH + id.ToString(); 
+        string path = _FILE_PATH_HEAD + id.ToString(); 
         TextAsset csvFile = Resources.Load(path, typeof(TextAsset)) as TextAsset;
         StringReader reader = new StringReader(csvFile.text);
         while (reader.Peek() != -1)
@@ -110,7 +109,6 @@ public class EventController : SingletonMonoBehaviour<EventController>
             // ‘I‘ðŽˆ‚É‚æ‚Á‚Ä•ªŠò
             else if (isBranch)
             {
-                Debug.Log(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseTrue] + _datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseFalse]);
                 if (answer)
                     nexteRow = int.Parse(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseTrue]);
                 else

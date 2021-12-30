@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,9 +13,7 @@ public class TextController : SingletonMonoBehaviour<TextController>
     private Text _trueText = null;
     [SerializeField]
     private Text _falseText = null;
-    public bool isEnter = false;
-    //public bool isConfirmed = false;
-    public bool answer = false;
+    private bool _answer = false;
     public MessageState messageState = MessageState.None;
     public enum MessageState : byte
     {
@@ -41,11 +37,11 @@ public class TextController : SingletonMonoBehaviour<TextController>
     {
         // Y/N ‘I‘ð
         if (Input.GetAxis("Horizontal") < 0)
-            answer = true;
+            _answer = true;
         else if (0 < Input.GetAxis("Horizontal"))
-            answer = false;
+            _answer = false;
 
-        if (answer)
+        if (_answer)
         {
             _trueText.color = Color.red;
             _falseText.color = Color.black;
@@ -56,7 +52,7 @@ public class TextController : SingletonMonoBehaviour<TextController>
             _falseText.color = Color.red;
         }
 
-        return answer;
+        return _answer;
     }
 
     public void ActivateChoice(string y, string n)
@@ -65,7 +61,7 @@ public class TextController : SingletonMonoBehaviour<TextController>
         messageState = MessageState.Choosing;
         _trueText.text = y;
         _falseText.text = n;
-        answer = true;
+        _answer = true;
     }
 
     public void DeactivateChoice()
