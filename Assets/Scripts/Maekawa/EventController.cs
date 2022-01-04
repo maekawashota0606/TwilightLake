@@ -77,18 +77,32 @@ public class EventController : SingletonMonoBehaviour<EventController>
         bool isEnd = false;
         while (!isEnd)
         {
+            // 選択肢があるなら
+            bool isBranch = _datasAtIndex[npc.eventState][row][(int)FieldName.Isbranch] != "0";
+            bool answer = false;
+            TextController.Instance.DeactivateChoice();
+
+            if (isBranch)
+            {
+                // 分岐選択前の条件チェック
+                if (npc.PreBranching())
+                {
+                    // UIに選択肢表示
+                    TextController.Instance.ActivateChoice(_datasAtIndex[npc.eventState][row][(int)FieldName.TrueWord],
+                                                            _datasAtIndex[npc.eventState][row][(int)FieldName.FalseWord]);
+                }
+                // 条件を満たさないなら
+                else
+                {
+                    // 強制的にスキップ
+                    row = int.Parse(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseFalse]);
+                    isBranch = false;
+                }
+            }
+
             // テキスト表示
             TextController.Instance.mainText.text = _datasAtIndex[npc.eventState][row][(int)FieldName.Message];
 
-            // 選択肢があるなら
-            bool isBranch = _datasAtIndex[npc.eventState][row][(int)FieldName.Isbranch] != "0";
-            if (isBranch)
-                TextController.Instance.ActivateChoice(_datasAtIndex[npc.eventState][row][(int)FieldName.TrueWord],
-                                                        _datasAtIndex[npc.eventState][row][(int)FieldName.FalseWord]);
-            else
-                TextController.Instance.DeactivateChoice();
-
-            bool answer = false;
             // テキスト送りの入力受付
             do
             {
@@ -100,15 +114,17 @@ public class EventController : SingletonMonoBehaviour<EventController>
             // プレイヤーがメッセージを送るのを待つ
             while (!TextController.Instance.InputReception());
 
+
             // 指定がなければ1行進める
             int nexteRow = row + 1;
 
             // 終了判定
             if (_datasAtIndex[npc.eventState][row][(int)FieldName.IsEnd] != "0")
                 isEnd = true;
-            // 選択肢によって分岐
+            // 分岐があった場合
             else if (isBranch)
             {
+                // 選択肢によって分岐
                 if (answer)
                     nexteRow = int.Parse(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseTrue]);
                 else
@@ -128,5 +144,7 @@ public class EventController : SingletonMonoBehaviour<EventController>
 
         TextController.Instance.DeactivateCanvas();
         _isActive = false;
+
+        // TODO:skip実装
     }
 }

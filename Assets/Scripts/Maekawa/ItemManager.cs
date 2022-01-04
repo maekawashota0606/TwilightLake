@@ -22,38 +22,32 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
 
     public void GetItem(Item item)
     {
-        // 同名アイテムをすでに持っているかチェック
-        for (int i = 0; i < _SLOT_SIZE; i++)
-        {
-            // 空きは一旦スルー
-            if (_itemSlots[i].itemType == Item.ItemType.None)
-            {
-                continue;
-            }
-            // すでに持っているアイテムならストック
-            else if (_itemSlots[i].itemType == item.itemType)
-            {
-                AddItem(i, item.quantity);
-                return;
-            }
-        }
-
-        // 同名アイテムを持っていない場合
+        // 同名アイテムをすでに持っているかチェック(個数は問わない)
+        int targetNum = CheckHaveItem(item.itemType, 1);
         // インベントリに空きがあるかチェック
-        for (int i = 0; i < _SLOT_SIZE; i++)
+        int targetNum2 = CheckHaveItem(Item.ItemType.None, 0);
+
+        // 同名アイテムを持っている場合
+        if (0 <= targetNum)
         {
-            // 空なら入手
-            if (_itemSlots[i].itemType == Item.ItemType.None)
-            {
-                SetItem(i, item);
-                return;
-            }
+            AddItem(targetNum, item.quantity);
+            return;
+        }
+        // インベントリに空きがある場合
+        else if (0 <= targetNum)
+        {
+            SetItem(targetNum, item);
+            return;
+        }
+        // ↑2つに該当しない場合
+        else
+        {
+            // 選択中のアイテムを捨てる
+            RemoveItem(_currentIndex);
+            SetItem(_currentIndex, item);
         }
 
-        // 空きもない場合
-        // 選択中のアイテムを捨てる
-        RemoveItem(_currentIndex);
-        SetItem(_currentIndex, item);
+        HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
     }
 
     public void UseItem()
@@ -96,7 +90,6 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
         else
         {
             _itemSlots[idx] = item;
-            HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
             Debug.Log($"{_itemSlots[idx].itemType}を`{_itemSlots[idx].quantity}個入手した");
         }
     }
@@ -104,7 +97,6 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
     private void AddItem(int idx, int quantity)
     {
         _itemSlots[idx].quantity += quantity;
-        HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
         Debug.Log($"{_itemSlots[idx].itemType}を`{quantity}個入手した");
     }
 
@@ -114,5 +106,46 @@ public class ItemManager : SingletonMonoBehaviour<ItemManager>
         Debug.Log($"{_itemSlots[idx].itemType}{_itemSlots[idx].quantity}個を捨てた");
         _itemSlots[idx].gameObject.transform.position = Player.Instance.transform.position + (Vector3.down * 0.75f);
         _itemSlots[idx] = _defaultItem;
+    }
+
+    /// <summary>
+    /// 指定のアイテムを必要数もっているか
+    /// </summary>
+    /// <param name="type">指定するアイテム</param>
+    /// <param name="requiredNum">アイテムの必要数(以上)</param>
+    /// <returns>足りているならそのスロット番号、足りていないなら-1</returns>
+    public int CheckHaveItem(Item.ItemType type, int requiredNum)
+    {
+        for (int i = 0; i < _SLOT_SIZE; i++)
+        {
+            if (_itemSlots[i].itemType == type && requiredNum <= _itemSlots[i].quantity)
+                return i;
+        }
+        // 指定されたアイテムがないなら
+        return -1;
+    }
+
+    public void DeleteItem(Item.ItemType type, int deleteNum)
+    {
+        int targetNum = CheckHaveItem(type, deleteNum);
+
+        // 指定のアイテムをもっているなら
+        if (0 <= targetNum)
+        {
+            //　所持数以下なら
+            if (_itemSlots[targetNum].quantity <= deleteNum)
+                _itemSlots[targetNum].quantity -= deleteNum;
+            // 所持数より多く要求されたなら0
+            else
+                _itemSlots[targetNum].quantity = 0;
+
+            // 空になったら空を示すアイテムをセット
+            if (_itemSlots[targetNum].quantity < 1)
+                _itemSlots[targetNum] = _defaultItem;
+
+            HUDManager.Instance.DrawInventory(_itemSlots, _currentIndex);
+        }
+        else
+            Debug.LogError("指定されたアイテムを持っていません");
     }
 }
