@@ -124,6 +124,7 @@ public class EventController : SingletonMonoBehaviour<EventController>
             // •ªŠò‚ª‚ ‚Á‚½ê‡
             else if (isBranch)
             {
+                npc.OnBranched(answer);
                 // ‘I‘ğˆ‚É‚æ‚Á‚Ä•ªŠò
                 if (answer)
                     nexteRow = int.Parse(_datasAtIndex[npc.eventState][row][(int)FieldName.IfChooseTrue]);

@@ -14,6 +14,14 @@ public abstract class NPC : MonoBehaviour, IInspectible
         StartCoroutine(EventController.Instance.DisplayScenario(this));
     }
 
+    /// <summary>
+    /// 分岐前の処理
+    /// </summary>
+    /// <returns>分岐できるか</returns>
     public abstract bool PreBranching();
-    public abstract void OnBranched();
+    /// <summary>
+    /// 分岐後の処理
+    /// </summary>
+    /// <param name="answer">プレイヤーの選択</param>
+    public abstract void OnBranched(bool answer);
 }
