@@ -8,7 +8,7 @@ public class PlayerAttack : MonoBehaviour
     {
         // o“ü‚è‚·‚é‚Æ•¡”‰ñŒÄ‚Î‚ê‚©‚Ë‚È‚¢‚Ì‚Å
         // “G‚É–³“GŠÔ‚ğì‚é‚©d•¡‚³‚¹‚È‚¢‚æ‚¤‚É‚·‚é
-        IDamagable damagable = other.GetComponent<IDamagable>();
+        IDamageble damagable = other.GetComponent<IDamageble>();
 
         if (damagable != null)
             damagable.AddDamage(10);

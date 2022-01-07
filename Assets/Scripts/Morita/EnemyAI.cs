@@ -5,16 +5,27 @@ using DG.Tweening;
 
 public class EnemyAI : MonoBehaviour
 {
+    enum State
+    {
+        Idel = 0x01,
+        Move = 0x02,
+        Attack = 0x04,
+        Hurt = 0x08
+    }
+    [SerializeField]
+    State state;
     #region private Variables
     //-----private-----//
-    [SerializeField, Header("移動速度")]
+    [SerializeField,Header("移動速度")]
     private float M_Speed;
-    [SerializeField, Header("見える範囲")]
+    [SerializeField,Header("見える範囲")]
     private float SeeDistance;
     [SerializeField, Header("この距離に入ったら移動停止")]
     private float Attack_Distance;
     [SerializeField, Header("クールダウン時間(0だったらデフォルトクールダウン時間が適応される)")]
     private float CoolDownTime;
+    [SerializeField, Header("攻撃されたときの硬直時間")]
+    private float HurtTime;
 
     private int HP;
     private float distance; //敵とプレイヤーの距離を保存する
@@ -41,38 +52,50 @@ public class EnemyAI : MonoBehaviour
     private Transform cast;
     [SerializeField]
     private LayerMask groundLayer;
-    [HideInInspector] public bool isAttackMode = false;
+    [HideInInspector]public bool isAttackMode = false;
     #endregion
 
     private void Awake()
     {
-        SelectTarget();
         e_attack = this.transform.GetComponent<EnemyAttack>();
-        canMove = true;
-    }
-    private void Start()
-    {
         rb = this.gameObject.GetComponent<Rigidbody>();
         animator = transform.GetComponent<Animator>();
+
+    }
+
+    private void Start()
+    {
+        SelectTarget();
     }
     private void FixedUpdate()
     {
-        if (canMove)
-        {
-            Move();
-        }
-        if (!InsideOfLimits() && !inRange)
+        if (!InsideOfLimits()&&!inRange)
         {
             SelectTarget();
         }
-        if (inRange)
+        if (inRange&&CanSeePlayer())
         {
-            AttackMode();
+            AddAttackFlag();
         }
-        /*if(isNeedJump()&&isGround)
+
+        CheckCanMove();
+
+        if((state & State.Hurt) == State.Hurt)
+        { 
+        
+        }
+        else
         {
-            Jump();
-        }*/
+            if ((state & State.Attack) == State.Attack)
+            {
+                AttackMode();
+            }
+            if ((state & State.Move) == State.Move)
+            {
+                Move();
+            }
+        }
+
         c_AttackMode();
     }
 
@@ -84,13 +107,8 @@ public class EnemyAI : MonoBehaviour
         //ray castで直線上にPlayerいるかどうか確認する
         if (CanSeePlayer())
         {
-            CheckCanMove();
             //確認出来たら Attack.csのN_Attackを開始する(これに関してはEnemyAIとSprictを統合するかも)
-            StartCoroutine(e_attack.N_Attack(CoolDownTime, cast.position));
-        }
-        else
-        {
-            CheckCanMove();
+            StartCoroutine(e_attack.N_Attack(CoolDownTime,cast.position));
         }
         //Cooldownをはさむ
         //FixedUpdate中、inRangeがtrueの限り、攻撃し続ける。
@@ -102,10 +120,10 @@ public class EnemyAI : MonoBehaviour
     void c_AttackMode()
     {
         var render = this.GetComponent<Renderer>();
-        if (isAttackMode == false)
+        if (isAttackMode==false)
         {
             render.material.color = Color.red;
-
+            
         }
         else
         {
@@ -113,26 +131,31 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// targetに向かって移動
+    /// </summary>
     void Move()
     {
         //ターゲット位置を一時変数に格納し、敵はX軸のみで移動させる
-        Vector3 targetPosition = new Vector3(target.position.x, transform.position.y, transform.position.z);
+        Vector3 targetPosition = new Vector3(target.position.x, transform.position.y,transform.position.z);
         //プレイヤーのXとY位置はYと等しい
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, M_Speed * Time.deltaTime);
     }
 
     void CheckCanMove()
     {
-        distance = Vector2.Distance(transform.position, target.position);
-        if (Attack_Distance >= distance)
+        if(inRange&!CanSeePlayer())
         {
-            canMove = false;
+            AddMoveFlag();
         }
-        else
+        if((state & State.Attack)==State.Attack && CanSeePlayer())
         {
-            canMove = true;
+            DelMoveFlag();
         }
-        animator.SetBool("IsMove", canMove);
+        if(!inRange)
+        {
+            AddMoveFlag();
+        }
     }
 
 
@@ -165,17 +188,6 @@ public class EnemyAI : MonoBehaviour
     {
         return transform.position.x > leftLimit.position.x && transform.position.x < rightLimit.position.x;
     }
-
-    /*
-    IEnumerator De()
-    {
-        while (true)
-        {
-            //Flip();
-            yield return new WaitForSeconds(1);
-        }
-
-    }*/
 
     /// <summary>
     /// 回転が必要かどうかを判断し
@@ -210,17 +222,58 @@ public class EnemyAI : MonoBehaviour
     {
         bool val = false;
         Ray ray;
-        ray = new Ray(cast.position, new Vector3(direction, 0, 0));
+        ray = new Ray(cast.position, new Vector3(direction,0,0));
         RaycastHit Hitinfo;
+
         //当たってるobjがplayerかどうかの判断
-        if (Physics.Raycast(ray, out Hitinfo, SeeDistance))
+        if(Physics.Raycast(ray, out Hitinfo, SeeDistance))
         {
-            if (Hitinfo.collider.gameObject.tag == "Player")
+            if(Hitinfo.collider.gameObject.tag =="Player")
             {
                 val = true;
             }
         }
         Debug.DrawRay(cast.position, new Vector3(direction * SeeDistance, 0, 0), color: Color.red);
         return val;
+    }
+    public IEnumerator Hurt()
+    {
+        //ロジック止める動作
+        state = state | State.Hurt;
+        yield return new WaitForSeconds(HurtTime);
+        state = state & ~State.Hurt;
+    }
+
+    private void AddIdelFlag()
+    {
+        state = state | State.Idel;
+    }
+    private void DelIdelFalg()
+    {
+        state = state & ~State.Idel;
+    }
+    private void AddMoveFlag()
+    {
+        state = state | State.Move;
+    }
+    private void DelMoveFlag()
+    {
+        state = state & ~State.Move;
+    }
+    private void AddAttackFlag()
+    {
+        state = state | State.Attack;
+    }
+    private void DelAttackFlag()
+    {
+        state = state & ~State.Attack;
+    }
+    private void AddHurtFlag()
+    {
+        state = state | State.Hurt;
+    }
+    private void DelHurtFlag()
+    {
+        state = State.Hurt;
     }
 }
