@@ -17,4 +17,10 @@ public class TakeDamage : MonoBehaviour, IDamageble
         enemyAI.StartCoroutine("Hurt");
         enemy.HitPoint -= damage;
     }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+            Player.Instance.AddDamage(10, transform.position);
+    }
 }

@@ -6,6 +6,10 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField]
     private float hp;
+    [SerializeField,Tooltip("死亡するときに追加するカルマポイントの値")]
+    private int Point;
+    [SerializeField]
+    private GameDirector director;
     private EnemyAI enemyAI;
 
     /// <summary>所持武器</summary>
@@ -21,7 +25,7 @@ public class Enemy : MonoBehaviour
             hp = value;
             if(hp<=0)
             {
-                GameManager.Point++;
+                director.AddKarmaPoint(Point);
                 //Destoryにしてもメモリ使用するから
                 //Enemyを生成するときはActiveモードfalseになってるものを使用
                 this.gameObject.SetActive(false);

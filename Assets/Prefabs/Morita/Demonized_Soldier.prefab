@@ -399,6 +399,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hp: 100
+  Point: 1
+  director: {fileID: 0}
 --- !u!95 &3930825273370320387
 Animator:
   serializedVersion: 3
