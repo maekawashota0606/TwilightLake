@@ -1,5 +1,13 @@
 public class Knight : NPC
 {
+    public override void ChangeState(int state)
+    {
+        base.ChangeState(state);
+
+        if (eventState == eventFinishState[eventIndex])
+            GameDirector.Instance.AddKarmaPoint(addKarmaPoint[eventIndex]);
+    }
+
     public override void OnBranched(bool answer)
     {
         if(answer)

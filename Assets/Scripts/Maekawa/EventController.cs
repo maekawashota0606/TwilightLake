@@ -136,7 +136,7 @@ public class EventController : SingletonMonoBehaviour<EventController>
             if (int.TryParse(_datasAtIndex[npc.eventState][row][(int)FieldName.ChangeState], out int state))
             {
                 nexteRow = 0;
-                npc.eventState = state;
+                npc.ChangeState(state);
             }
 
             // w’è‚µ‚½s‚Éi‚Ş

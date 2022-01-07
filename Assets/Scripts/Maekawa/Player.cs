@@ -228,6 +228,11 @@ public class Player : SingletonMonoBehaviour<Player>
         _isInputAvoid = false;
     }
 
+    public void Init()
+    {
+        _HP = _maxHP;
+    }
+
     public void Heal(int healAmount)
     {
         _HP += healAmount;
@@ -249,7 +254,10 @@ public class Player : SingletonMonoBehaviour<Player>
         if (_maxHP < _HP)
             _HP = _maxHP;
         else if (_HP < 0)
+        {
             _HP = 0;
+            GameDirector.Instance.Respown();
+        }
     }
 
     private void CountInvincibleTime()

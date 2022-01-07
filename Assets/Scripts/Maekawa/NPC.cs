@@ -8,10 +8,19 @@ public abstract class NPC : MonoBehaviour, IInspectible
     public int eventIndex = 0;
     [SerializeField]
     public int eventState = 0;
+    [SerializeField]
+    protected int[] eventFinishState = new int[3];
+    [SerializeField]
+    protected int[] addKarmaPoint = new int[3];
 
     public void Inspected()
     {
         StartCoroutine(EventController.Instance.DisplayScenario(this));
+    }
+
+    public virtual void ChangeState(int state)
+    {
+        eventState = state;
     }
 
     /// <summary>
